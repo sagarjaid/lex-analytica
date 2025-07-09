@@ -2,7 +2,7 @@
 
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -35,6 +35,16 @@ export default function LoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const supabase = createClient();
+
+  // Ref for OTP input
+  const otpInputRef = useRef<HTMLInputElement>(null);
+
+  // Focus OTP input when showOtpInput becomes true
+  useEffect(() => {
+    if (showOtpInput && otpInputRef.current) {
+      otpInputRef.current.focus();
+    }
+  }, [showOtpInput]);
 
   const handleSendOtp = async () => {
     try {
@@ -171,6 +181,11 @@ export default function LoginPage() {
                         onBlur: (e: React.FocusEvent<HTMLInputElement>) => {
                           e.target.style.border = '1px solid #E7E5E4';
                         },
+                        onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => {
+                          if (e.key === 'Enter' && phoneNumber && !loading) {
+                            handleSendOtp();
+                          }
+                        },
                       }}
                     />
                   </div>
@@ -192,6 +207,12 @@ export default function LoginPage() {
                       value={otp}
                       onChange={(e) => setOtp(e.target.value)}
                       maxLength={6}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && otp && !loading) {
+                          handleVerifyOtp();
+                        }
+                      }}
+                      ref={otpInputRef}
                     />
                   </div>
                   <div className='flex gap-2'>

@@ -31,7 +31,7 @@ export default function Pricing() {
     <main className="flex flex-col items-center pt-6 px-6 pb-24">
       <div className="w-full max-w-2xl md:max-w-4xl">
         <div className="flex justify-between items-center mb-2">
-          <h1 className="text-xl  font-extrabold mb-2">Pricing</h1>
+          <h1 className="text-xl  font-extrabold">Pricing</h1>
           <span className="lg:block hidden">
             <ThemeToggle />
           </span>

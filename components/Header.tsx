@@ -17,10 +17,12 @@ import {
   User as UserIcon,
   LogOut,
   LogIn,
-  Sparkle
+  Sparkle,
+  AlignCenter,
+  AlignJustify
 } from 'lucide-react';
 
-const Header = ({ handleSignOut, user, router }: { handleSignOut: () => void, user: any, router: any }) => {
+const Header = ({ handleSignOut, user, router }: { handleSignOut?: () => void, user: any, router: any }) => {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -66,7 +68,7 @@ const Header = ({ handleSignOut, user, router }: { handleSignOut: () => void, us
       className={`border-b border-border sticky top-0 w-full z-40 bg-background ${isDashRoute ? 'lg:hidden' : ''}`}
     >
       <nav
-        className='w-full max-w-7xl mx-auto flex items-center justify-between p-4'
+        className='w-full max-w-7xl mx-auto flex items-center justify-between px-4 py-2'
         aria-label='Global'>
 
           {/* Logo */}
@@ -74,9 +76,9 @@ const Header = ({ handleSignOut, user, router }: { handleSignOut: () => void, us
           <Logo priority={true} />
         </div> */}
 
-<Link
+        <Link
               href="/dash"
-              className="flex items-center gap-2 px-1.5 py-2 rounded-lg hover:bg-gray-100 text-gray-900"
+              className="flex items-center gap-2 px-1.5 py-2 rounded-lg hover:bg-gray-100 text-gray-900 lg:hidden"
             >
               <Sparkle
                 strokeWidth={1}
@@ -155,25 +157,8 @@ const Header = ({ handleSignOut, user, router }: { handleSignOut: () => void, us
 
 {/* Mobile Hamburger */}
         <div className='flex lg:hidden'>
-          <Button
-            variant='ghost'
-            size='icon'
-            onClick={() => setIsOpen(true)}>
-            <span className='sr-only'>Open main menu</span>
-            <svg
-              xmlns='http://www.w3.org/2000/svg'
-              fill='none'
-              viewBox='0 0 24 24'
-              strokeWidth={1.5}
-              stroke='currentColor'
-              className='w-6 h-6'>
-              <path
-                strokeLinecap='round'
-                strokeLinejoin='round'
-                d='M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5'
-              />
-            </svg>
-          </Button>
+          <AlignJustify className='w-6 h-6 cursor-pointer' strokeWidth={1.5}  onClick={() => setIsOpen(true)}/>
+          <span className='sr-only'>Open main menu</span>
         </div>
 
     
@@ -184,7 +169,21 @@ const Header = ({ handleSignOut, user, router }: { handleSignOut: () => void, us
         <div className='fixed inset-0 bg-background/80 backdrop-blur-sm' />
         <div className='fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-background border-l border-border p-4 sm:max-w-sm sm:ring-1 sm:ring-border'>
           <div className='flex items-center justify-between'>
-            <Logo priority={true} />
+            {/* <Logo priority={true} /> */}
+
+            <Link
+              href="/dash"
+              className="flex items-center gap-2 px-1.5 rounded-lg hover:bg-gray-100 text-gray-900 lg:hidden"
+            >
+              <Sparkle
+                strokeWidth={1}
+                color="Green"
+                fill="Green"
+                className="w-6 h-6"
+              />{" "}
+              <span className="font-semibold text-base">NevermissAI</span>
+            </Link>
+
             <div className='flex items-center gap-2'>
             <Button
             variant='ghost'

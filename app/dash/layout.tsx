@@ -88,21 +88,28 @@ export default function DashboardLayout({
     { href: "/dash/add", label: "Add Goal" },
   ];
 
+  const isActive = (href: string) => {
+    if (href === "/dash") {
+      return pathname === "/dash";
+    }
+    return pathname === href || pathname.startsWith(href + "/");
+  };
+
   return (
     <div className="min-h-screen max-w-5xl mx-auto bg-background">
       <Header handleSignOut={handleSignOut} user={user} router={router} />
 
       <div className="flex flex-col md:flex-row mt-2 min-h-screen">
         {/* Sidebar */}
-        <aside className="w-48 hidden sticky left-0 top-0  md:w-56 flex-shrink-0 md:flex flex-col justify-between border-r h-auto md:h-[calc(100vh-64px)] p-4">
+        <aside className="w-48 hidden sticky left-0 top-0  md:w-56 flex-shrink-0 md:flex flex-col justify-between border-r h-auto md:h-[calc(100vh-20px)] p-4">
           <nav className="space-y-1 md:space-y-2">
-            {/* <Link href="/dash" className="flex items-center gap-2 px-1.5 py-2 rounded-lg hover:bg-gray-100 text-gray-900">
+            {/* <Link href="/dash" className="flex items-center gap-2 px-1.5 py-2 rounded-lg hover:bg-gray-200 text-gray-900">
               <Repeat2 strokeWidth={3.5} color='Green' className="w-6 h-6" /> <span className='font-semibold text-base'>NevermissAI</span>
             </Link> */}
 
             <Link
               href="/dash"
-              className="flex items-center gap-2 px-1.5 py-2 rounded-lg hover:bg-gray-100 text-gray-900"
+              className="hidden lg:flex  items-center gap-2 px-1.5 py-2 rounded-lg hover:bg-gray-100 text-gray-900"
             >
               <Sparkle
                 strokeWidth={1}
@@ -115,40 +122,52 @@ export default function DashboardLayout({
 
             <Link
               href="/dash"
-              className="flex items-center gap-2 md:gap-3 px-2 md:px-3 py-2 rounded-lg hover:bg-gray-100 text-gray-900 font-medium  text-sm"
+              className={cn(
+                "flex items-center gap-2 md:gap-3 px-3 py-2 rounded-lg hover:bg-gray-200 text-gray-900 font-medium  text-sm",
+                isActive("/dash") && "bg-gray-200 font-bold"
+              )}
             >
               <LayoutDashboard className="w-4 h-4 md:w-5 md:h-5" /> Dashboard
             </Link>
             <Link
               href="/dash/goals"
-              className="flex items-center gap-2 md:gap-3 px-2 md:px-3 py-2 rounded-lg hover:bg-gray-100 text-gray-700 text-sm"
+              className={cn(
+                "flex items-center gap-2 md:gap-3 px-3 py-2 rounded-lg hover:bg-gray-200 text-gray-700 text-sm",
+                isActive("/dash/goals") && "bg-gray-200 font-bold"
+              )}
             >
               <Target className="w-4 h-4 md:w-5 md:h-5" /> Goals
             </Link>
             <Link
               href="/dash/pricing"
-              className="flex items-center gap-2 md:gap-3 px-2 md:px-3 py-2 rounded-lg hover:bg-gray-100 text-gray-700 text-sm"
+              className={cn(
+                "flex items-center gap-2 md:gap-3 px-3 py-2 rounded-lg hover:bg-gray-200 text-gray-700 text-sm",
+                isActive("/dash/pricing") && "bg-gray-200 font-bold"
+              )}
             >
               <Tags className="w-4 h-4 md:w-5 md:h-5" /> Pricing
             </Link>
             <Link
               href="/dash/account"
-              className="flex items-center gap-2 md:gap-3 px-2 md:px-3 py-2 rounded-lg hover:bg-gray-100 text-gray-700  text-sm"
+              className={cn(
+                "flex items-center gap-2 md:gap-3 px-3 py-2 rounded-lg hover:bg-gray-200 text-gray-700  text-sm",
+                isActive("/dash/account") && "bg-gray-200 font-bold"
+              )}
             >
               <User className="w-4 h-4 md:w-5 md:h-5" /> Account
             </Link>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center cursor-pointer gap-4">
               {user ? (
                 <div
                   onClick={handleSignOut}
-                  className="flex items-center gap-2 md:gap-3 px-2 md:px-3 py-2 rounded-lg hover:bg-gray-100 text-gray-700  text-sm"
+                  className="flex items-center gap-2 md:gap-3 px-3 py-2 rounded-lg hover:bg-red-100 text-gray-700 w-full text-sm"
                 >
                   <LogOut className="w-4 h-4 md:w-5 md:h-5" /> Sign Out
                 </div>
               ) : (
                 <Link
                   href="/login"
-                  className="flex items-center gap-2 md:gap-3 px-2 md:px-3 py-2 rounded-lg hover:bg-gray-100 text-gray-700 text-sm"
+                  className="flex items-center gap-2 md:gap-3 px-3 py-2 rounded-lg hover:bg-gray-200 text-gray-700 w-full text-sm"
                 >
                   <LogIn className="w-4 h-4 md:w-5 md:h-5" />
                   Sign In
@@ -185,7 +204,7 @@ export default function DashboardLayout({
 
           {/* Right Sidebar */}
           <aside className="w-full lg:w-64 flex-shrink-0 border-l hidden lg:block p-4 mt-4 md:mt-0">
-            <div className=" rounded-xl border border-gray-200 shadow p-4">
+            <div className=" rounded-xl border border-gray-200 shadow sticky top-4 p-4">
               <div className="flex justify-between items-center mb-2">
                 <div className="font-bold text-base md:text-md">
                   Active Plan
