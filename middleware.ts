@@ -32,28 +32,27 @@ export async function middleware(req: NextRequest) {
   );
 
   const {
-    data: { session },
-  } = await supabase.auth.getSession();
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  // If user is not signed in and the current path is not /login or /signin,
+  // If user is not logged in and the current path is not /login or /signin,
   // redirect the user to /login
-  if (
-    !session &&
-    !req.nextUrl.pathname.startsWith('/login') &&
-    !req.nextUrl.pathname.startsWith('/signin')
-  ) {
-    const redirectUrl = req.nextUrl.clone();
-    redirectUrl.pathname = '/login';
-    redirectUrl.searchParams.set(`redirectedFrom`, req.nextUrl.pathname);
-    return NextResponse.redirect(redirectUrl);
-  }
+  // if (
+  //   !user &&
+  //   !req.nextUrl.pathname.startsWith('/login') &&
+  //   !req.nextUrl.pathname.startsWith('/signin')
+  // ) {
+  //   const redirectUrl = req.nextUrl.clone();
+  //   redirectUrl.pathname = '/login';
+  //   redirectUrl.searchParams.set(`redirectedFrom`, req.nextUrl.pathname);
+  //   return NextResponse.redirect(redirectUrl);
+  // }
 
-  // If user is signed in and the current path is /login or /signin,
+  // If user is logged in and the current path is /login or /signin,
   // redirect the user to /dash/goals
   if (
-    session &&
-    (req.nextUrl.pathname.startsWith('/login') ||
-      req.nextUrl.pathname.startsWith('/signin'))
+    user &&
+    (req.nextUrl.pathname === '/' || req.nextUrl.pathname === '/login' || req.nextUrl.pathname === '/signin')
   ) {
     const redirectUrl = req.nextUrl.clone();
     redirectUrl.pathname = '/dash/goals';

@@ -1,59 +1,69 @@
-import { Suspense } from "react";
-import Header from "@/components/Header";
+import { Suspense } from 'react';
+import Header from '@/components/Header';
 // import ButtonSubmitYT from '@/components/ButtonSubmitYT';
 // import ChannelList from '@/components/ChannelList';
 // import Navbar from '@/components/Navbar';
 // import VisaInterviewTwo from '@/components/core/visaInterviewTwo';
 // import VisaInterview from '@/components/core/visaInterview';
-import Pricing from "@/components/Pricing";
-import Footer from "@/components/Footer";
-import dynamic from "next/dynamic";
+import Pricing from '@/components/Pricing';
+import Footer from '@/components/Footer';
+import dynamic from 'next/dynamic';
 // import Headline from '@/components/Headline';
-import Headline from "@/components/Headline";
+import Headline from '@/components/Headline';
 
-import Hero from "@/components/Hero";
-import Problem from "@/components/Problem";
-import FeaturesAccordion from "@/components/FeaturesAccordion";
-import FAQ from "@/components/FAQ";
-import CTA from "@/components/CTA";
-import Plan from "@/components/Pricing";
-import Plans from "@/components/Plans";
+import Hero from '@/components/Hero';
+    import Problem from '@/components/Problem';
+import FeaturesAccordion from '@/components/FeaturesAccordion';
+import FAQ from '@/components/FAQ';
+import CTA from '@/components/CTA';
+import Plan from '@/components/Pricing';
+import Plans from '@/components/Plans';
 // import PricingOld from '@/components/Pricing-old';
-import usedby from "@/public/usedby.png";
-import Phone from "@/components/Phone";
-import Iphone from "@/components/Iphone";
-import blue from "@/app/Blue.png";
+import usedby from '@/public/usedby.png';
+import Phone from '@/components/Phone';
+import Iphone from '@/components/Iphone';
+import blue from '@/app/Blue.png';
+
 
 export default function Home() {
   const handleSignOut = () => {
-    console.log("sign out");
-  };
+    console.log('sign out');
+  }
   return (
     <>
-      <main className="flex flex-col gap-4 items-center w-full justify-center bg-white bg-[url('/bg.svg')] bg-cover bg-center bg-no-repeat">
+      <main className='flex flex-col gap-4 items-center w-full justify-center bg-white'>
         {/* <div className='bg-green-500 text-white text-sm w-full flex justify-center items-center p-2 py-3'>
           We are working on few new features, Errors may occur
         </div> */}
-        <div className="flex max-w-5xl w-full gap-4 flex-col items-center justify-center ">
+        <div className='flex max-w-5xl w-full gap-4 flex-col items-center justify-center '>
           <Suspense>
             <Header user={null} router={null} />
           </Suspense>
         </div>
+      
 
         <section>
-          <div className="max-w-7xl mx-auto px-8 md:pt-20 text-center">
-            <h2 className="max-w-3xl mx-auto font-extrabold text-4xl md:text-5xl tracking-tight mb-4 leading-10">
-              Never miss your life Goals
-            </h2>
-            <p className="max-w-xl mx-auto font-bold text-gray-900 text-xl opacity-90 leading-relaxed mb-12">
-              Your Life Goals, Tasks or Habits Reminded by AI calls
-            </p>
-          </div>
+      <div className='max-w-7xl mx-auto px-8 md:pt-20 text-center'>
+        <h2 className='max-w-3xl mx-auto font-extrabold text-4xl md:text-5xl tracking-tight mb-6 leading-10'>
+        Never Miss Your Life Goals
+        </h2>
+        <p className='max-w-xl mx-auto font-bold text-gray-800 text-xl opacity-90 leading-relaxed mb-12'>
+        Your Life Goals, Tasks or Habits Reminded by AI calls
+        </p>
+      </div>
 
-          <Phone className="w-72 h-auto mx-auto" />
-        </section>
+      <Phone className="w-72 h-auto mx-auto" />
+    
+    </section>
 
-        <div className="flex max-w-5xl w-full gap-4 flex-col items-center justify-center ">
+  
+
+
+
+     
+
+
+        <div className='flex max-w-5xl w-full gap-4 flex-col items-center justify-center '>
           {/* <a
             href='/signin'
             className='flex justify-center items-center w-full'>
@@ -109,13 +119,13 @@ export default function Home() {
           </div> */}
         </div>
 
-        {/* <Pricing hide={false} /> */}
+        <Pricing hide={false} />
         {/* <FAQ /> */}
 
         {/* <CtaBox /> */}
       </main>
       {/* <FooterBIg /> */}
-      {/* <Footer /> */}
+      <Footer />
     </>
   );
 }

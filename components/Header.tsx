@@ -65,28 +65,25 @@ const Header = ({ handleSignOut, user, router }: { handleSignOut?: () => void, u
   // Use Tailwind's hidden class for lg+ if on dash route
   return (
     <header
-      className={`border-b border-border sticky top-0 w-full z-40 bg-background ${isDashRoute ? 'lg:hidden' : ''}`}
+      className={`sticky top-0 w-full z-40 bg-background ${isDashRoute ? 'lg:hidden' : ''}`}
     >
       <nav
-        className='w-full max-w-7xl mx-auto flex items-center justify-between px-4 py-2'
+        className='w-full max-w-7xl mx-auto flex items-center justify-between px-4 py-2 pt-4'
         aria-label='Global'>
 
-          {/* Logo */}
-        {/* <div className='flex'>
-          <Logo priority={true} />
-        </div> */}
+    
 
         <Link
-              href="/dash"
-              className="flex items-center gap-2 px-1.5 py-2 rounded-lg hover:bg-gray-100 text-gray-900 lg:hidden"
+              href={isDashRoute ? '/dash' : '/'}
+              className={`flex items-center gap-2 px-1.5 py-2 rounded-lg  text-gray-900 ${isDashRoute ? 'lg:hidden hover:bg-gray-100' : ''}`}
             >
               <Sparkle
                 strokeWidth={1}
                 color="Green"
                 fill="Green"
-                className="w-6 h-6"
+                className={isDashRoute  ? 'w-6  h-6' : 'w-8 h-8'}
               />{" "}
-              <span className="font-semibold text-base">NevermissAI</span>
+              <span className={isDashRoute  ? 'font-semibold text-base' : 'font-bold text-xl'}>NevermissAI</span>
             </Link>
      
 
@@ -94,24 +91,19 @@ const Header = ({ handleSignOut, user, router }: { handleSignOut?: () => void, u
 
     {/* Desktop Nav */}
 
-        <div className='hidden items-center lg:flex lg:flex-1 lg:justify-end lg:gap-x-4'>
-          <div className='hidden lg:flex lg:gap-x-4 items-center'>
+        <div className={`${isDashRoute ? 'hidden' : ''} items-center lg:flex lg:flex-1 lg:justify-end lg:gap-x-4`}>
+          <div className={`${isDashRoute ? 'hidden' : ''} flex gap-x-2 md:gap-x-4 items-center`}>
+            {/* <Link
+              href='#pricing'
+              className='text-sm hidden md:block font-semibold leading-6 text-foreground hover:text-muted-foreground transition-colors'>
+              Pricing
+            </Link> */}
             <Link
-              href='/'
-              className='text-sm font-semibold leading-6 text-foreground hover:text-muted-foreground transition-colors'>
-              Home
+              href='/login'
+              className='text-sm border border-gray-400 text-black px-4 py-1.5 rounded-lg font-semibold leading-6 text-foreground hover:text-muted-foreground transition-colors'>
+              Login
             </Link>
-            <Link
-              href='/all'
-              className='text-sm font-semibold leading-6  text-foreground hover:text-muted-foreground transition-colors'>
-              Assets
-            </Link>
-            <Link
-              href='/blog'
-              className='text-sm font-semibold leading-6 text-foreground hover:text-muted-foreground transition-colors'>
-              Blog
-            </Link>
-            <Button
+            {/* <Button
             variant='ghost'
             size='icon'
             className='border'
@@ -148,19 +140,20 @@ const Header = ({ handleSignOut, user, router }: { handleSignOut?: () => void, u
                 />
               </svg>
             )}
-          </Button>
+          </Button> */}
           </div>
 
          
-          {/* <ButtonLogin /> */}
         </div>
 
+
+        
+
 {/* Mobile Hamburger */}
-        <div className='flex lg:hidden'>
+        <div className={`${isDashRoute ? 'flex lg:hidden' : 'hidden'} `}>
           <AlignJustify className='w-6 h-6 cursor-pointer' strokeWidth={1.5}  onClick={() => setIsOpen(true)}/>
           <span className='sr-only'>Open main menu</span>
         </div>
-
     
       </nav>
 

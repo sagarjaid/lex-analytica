@@ -46,6 +46,21 @@ export default function LoginPage() {
     }
   }, [showOtpInput]);
 
+  
+    // Auto-focus phone input when component mounts (only once)
+  useEffect(() => {
+    const phoneInput = document.querySelector('.react-tel-input input') as HTMLInputElement;
+    if (phoneInput) {
+      phoneInput.focus();
+      // Position cursor after the country code (+1)
+      setTimeout(() => {
+        phoneInput.setSelectionRange(2, 2); // Position after "+1"
+      }, 0);
+    }
+  }, []); // Empty dependency array - only runs once on mount
+
+
+
   const handleSendOtp = async () => {
     try {
       setLoading(true);
@@ -96,21 +111,9 @@ export default function LoginPage() {
 
   return (
     <>
-      <Header />
-      <main className='p-4 mb-40 max-w-7xl mx-auto'>
-        <div className='text-center mb-4'>
-          <div className='mb-20'>
-            <BreadcrumbNav
-              items={[
-                { label: 'Home', href: getAbsoluteUrl('/') },
-                {
-                  label: 'Login',
-                  href: getAbsoluteUrl(config.auth.loginUrl),
-                },
-              ]}
-            />
-          </div>
-        </div>
+      <Header user={null} router={router} />
+      <main className='p-4 mb-40 flex flex-col items-center justify-center h-[calc(100vh-100px)] max-w-7xl mx-auto'>
+     
 
         <Card className='max-w-md mx-auto'>
           <CardHeader>
@@ -118,7 +121,7 @@ export default function LoginPage() {
               Login with Phone
             </CardTitle>
             <CardDescription>
-              Sign in with your phone number to manage your goals
+              Sign in with your number to manage your goals
             </CardDescription>
           </CardHeader>
           <CardContent className='space-y-8'>
@@ -145,7 +148,7 @@ export default function LoginPage() {
                         fontWeight: '500',
                         boxShadow:
                           '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)',
-                        padding: '8px 14px 8px 60px',
+                        padding: '12px 14px 12px 60px',
                         color: '#0D0A09',
                         width: '100%',
                         border: '1px solid #E7E5E4',
@@ -190,7 +193,7 @@ export default function LoginPage() {
                     />
                   </div>
                   <Button
-                    className='w-full'
+                    className='w-full h-10'
                     onClick={handleSendOtp}
                     disabled={loading || !phoneNumber}>
                     {loading ? 'Sending...' : 'Send OTP'}
@@ -202,6 +205,7 @@ export default function LoginPage() {
                     <Label htmlFor='otp'>Enter OTP</Label>
                     <Input
                       id='otp'
+                      className='h-10'
                       type='text'
                       placeholder='Enter the code sent to your phone'
                       value={otp}
@@ -218,13 +222,13 @@ export default function LoginPage() {
                   <div className='flex gap-2'>
                     <Button
                       variant='outline'
-                      className='flex-1'
+                      className='flex-1 h-10'
                       onClick={() => setShowOtpInput(false)}
                       disabled={loading}>
                       Back
                     </Button>
                     <Button
-                      className='flex-1'
+                      className='flex-1 h-10'
                       onClick={handleVerifyOtp}
                       disabled={loading || !otp}>
                       {loading ? 'Verifying...' : 'Verify OTP'}
@@ -236,7 +240,7 @@ export default function LoginPage() {
           </CardContent>
         </Card>
       </main>
-      <Footer />
+      {/* <Footer /> */}
     </>
   );
 }

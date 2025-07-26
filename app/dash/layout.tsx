@@ -101,7 +101,7 @@ export default function DashboardLayout({
 
       <div className="flex flex-col md:flex-row mt-2 min-h-screen">
         {/* Sidebar */}
-        <aside className="w-48 hidden sticky left-0 top-0  md:w-56 flex-shrink-0 md:flex flex-col justify-between border-r h-auto md:h-[calc(100vh-20px)] p-4">
+        <aside className="w-48 hidden sticky left-0 top-0 md:w-56 flex-shrink-0 md:flex flex-col justify-between border-r h-auto md:h-[calc(100vh-20px)] p-4">
           <nav className="space-y-1 md:space-y-2">
             {/* <Link href="/dash" className="flex items-center gap-2 px-1.5 py-2 rounded-lg hover:bg-gray-200 text-gray-900">
               <Repeat2 strokeWidth={3.5} color='Green' className="w-6 h-6" /> <span className='font-semibold text-base'>NevermissAI</span>

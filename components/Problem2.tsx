@@ -75,31 +75,34 @@ const Problem = () => {
 
   return (
     <section className=' '>
-      <div className='max-w-7xl mx-auto px-8 py-16 text-center'>
-      <p className='max-w-xl mx-auto text-lg opacity-90 leading-relaxed mb-12'>
-          FUN FACT
-        </p>
-        <h2 className='max-w-4xl mx-auto font-extrabold text-3xl md:text-4xl tracking-tight mb-6 md:mb-8 leading-10'>
-          75% People just ignore reminder notifications set by themselves ; don't be that person
+      <div className='max-w-7xl mx-auto px-8 py-16 md:py-32 text-center'>
+        <h2 className='max-w-3xl mx-auto font-extrabold text-4xl md:text-5xl tracking-tight mb-6 md:mb-8 leading-10'>
+          75% People just ignore reminder notifications set by themselves
         </h2>
         <p className='max-w-xl mx-auto text-lg opacity-90 leading-relaxed mb-12 md:mb-20'>
-          Yup, Just another AI reminder app ;D
+          Not just a AI reminder app, here is how it works
         </p>
 
+        {/* <div className='flex flex-col md:flex-row justify-center items-center md:items-start gap-6'>
+          <Step
+            emoji='🤚'
+            text='Create a Goal'
+          />
 
-        <div className='text-sm opacity-90 text-gray-500 text-xs leading-relaxed flex flex-wrap gap-2 justify-center'>
-          <a href="/terms" className="hover:underline">Terms of Service</a>
-          <span>|</span>
-          <a href="/privacy" className="hover:underline">Privacy Policy</a>
-          <span>|</span>
-          <a href="/support" className="hover:underline">Support</a>
-          <span>|</span>
-          <span>
-            Build by <a href="https://twitter.com/sagarjaid" target="_blank" rel="noopener noreferrer" className="hover:underline">Sagar Jaid</a>
-          </span>
-        </div>
+          <Arrow extraStyle='max-md:-scale-x-100 md:-rotate-90 text-blue-200' />
 
-   
+          <Step
+            emoji='😍'
+            text='Get reminder calls'
+          />
+
+          <Arrow extraStyle='md:-scale-x-100 md:-rotate-90' />
+
+          <Step
+            emoji='💪'
+            text='Stay on Track'
+          />
+        </div> */}
       </div>
     </section>
   );
