@@ -131,3 +131,75 @@ progress::-webkit-progress-value {
 .list-scrollbar::-webkit-scrollbar-thumb {
   @apply rounded-full bg-muted hover:bg-muted-foreground/50;
 }
+
+/* Animated Gradient Border Styles */
+@keyframes gradient-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.gradient-border {
+  position: relative;
+  border-radius: 8px;
+  padding: 2px;
+  background: linear-gradient(
+    45deg,
+    #ff6b6b,
+    #4ecdc4,
+    #2ecc71,
+    #feca57,
+    #ff9ff3,
+    #54a0ff,
+    #5f27cd,
+    #00b894
+  );
+  background-size: 400% 400%;
+  animation: gradient-shift 3s ease infinite;
+}
+
+.gradient-border-static {
+  animation: none;
+}
+
+.gradient-border::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 8px;
+  padding: 2px;
+  background: linear-gradient(
+    45deg,
+    #ff6b6b,
+    #4ecdc4,
+    #2ecc71,
+    #feca57,
+    #ff9ff3,
+    #54a0ff,
+    #5f27cd,
+    #00b894
+  );
+  background-size: 400% 400%;
+  animation: gradient-shift 3s ease infinite reverse;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+}
+
+.gradient-border-static::before {
+  animation: none;
+}
+
+.input-content {
+  background: white;
+  border-radius: 6px;
+  position: relative;
+  z-index: 1;
+}

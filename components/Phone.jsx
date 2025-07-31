@@ -15,6 +15,7 @@ const Phone = ({ className = '', ...props }) => {
   const [showOtpInput, setShowOtpInput] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [isInputActive, setIsInputActive] = useState(false);
 
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -41,6 +42,11 @@ const Phone = ({ className = '', ...props }) => {
       }, 0);
     }
   }, []); // Empty dependency array - only runs once on mount
+
+  // Update input active state based on phone number content
+  useEffect(() => {
+    setIsInputActive(phoneNumber.length > 0);
+  }, [phoneNumber]);
 
   const handleSendOtp = async () => {
     try {
@@ -96,8 +102,6 @@ const Phone = ({ className = '', ...props }) => {
       style={{ minHeight: '720px', minWidth: '350px' }}
       {...props}
     >
-
-
       <div className="absolute inset-0 flex flex-col gap-4 items-center justify-center p-6">
         {/* Star Icon */}
         
@@ -119,76 +123,72 @@ const Phone = ({ className = '', ...props }) => {
         {/* Phone Input */}
         <div className="w-full max-w-sm">
           {!showOtpInput ? (
-                         <PhoneInput
-                        
-               country={'us'}
-               value={phoneNumber}
-               onChange={setPhoneNumber}
-               inputStyle={{
-                 fontFamily: '"Bricolage Grotesque", sans-serif',
-                 fontWeight: '500',
-                 boxShadow:
-                   '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)',
-                 padding: '12px 14px 12px 60px',
-                 color: '#0D0A09',
-                 width: '100%',
-                 border: '1px solid #E7E5E4',
-                 borderRadius: '6px',
-                 fontSize: '14px',
-                 lineHeight: '19px',
-                 transition: 'border-color 0.2s ease-in-out',
-                 background: 'transparent',
-                 
-               }}
-               buttonStyle={{
-                 border: '0px solid #E7E5E4',
-                 borderRight: 'none',
-                 borderRadius: '6px 0 0 6px',
-                 backgroundColor: 'transparent',
-                 fontFamily: '"Bricolage Grotesque", sans-serif',
-                 fontWeight: '500',
-                 
-               }}
-               dropdownStyle={{
-                 fontFamily: '"Bricolage Grotesque", sans-serif',
-                 fontWeight: '500',
-               }}
-               containerStyle={{
-                 width: '100%',
-                 fontFamily: '"Bricolage Grotesque", sans-serif',
-                 fontWeight: '500',
-               }}
-               inputProps={{
-                 required: true,
-                 onFocus: (e) => {
-                   e.target.style.border = '1px solid #000000';
-                   e.target.style.boxShadow = 'none';
-                 },
-                 onBlur: (e) => {
-                   e.target.style.border = '1px solid #E7E5E4';
-                 },
-                 onKeyDown: (e) => {
-                   if (e.key === 'Enter' && phoneNumber && !loading) {
-                     handleSendOtp();
-                   }
-                 },
-               }}
-             />
+            <div className={`gradient-border ${isInputActive ? 'gradient-border-static' : ''}`}>
+              <div className="input-content">
+                <PhoneInput
+                  country={'us'}
+                  value={phoneNumber}
+                  onChange={setPhoneNumber}
+                  inputStyle={{
+                    fontFamily: '"Bricolage Grotesque", sans-serif',
+                    fontWeight: '500',
+                    padding: '12px 14px 12px 60px',
+                    color: '#0D0A09',
+                    width: '100%',
+                    border: 'none',
+                    borderRadius: '6px',
+                    fontSize: '14px',
+                    lineHeight: '19px',
+                    background: 'transparent',
+                    outline: 'none',
+                  }}
+                  buttonStyle={{
+                    border: 'none',
+                    borderRight: 'none',
+                    borderRadius: '6px 0 0 6px',
+                    backgroundColor: 'transparent',
+                    fontFamily: '"Bricolage Grotesque", sans-serif',
+                    fontWeight: '500',
+                  }}
+                  dropdownStyle={{
+                    fontFamily: '"Bricolage Grotesque", sans-serif',
+                    fontWeight: '500',
+                  }}
+                  containerStyle={{
+                    width: '100%',
+                    fontFamily: '"Bricolage Grotesque", sans-serif',
+                    fontWeight: '500',
+                  }}
+                  inputProps={{
+                    required: true,
+                    onKeyDown: (e) => {
+                      if (e.key === 'Enter' && phoneNumber && !loading) {
+                        handleSendOtp();
+                      }
+                    },
+                  }}
+                />
+              </div>
+            </div>
           ) : (
-            <Input
-              type='text'
-              placeholder='Enter the code sent to your phone'
-              value={otp}
-              onChange={(e) => setOtp(e.target.value)}
-              maxLength={6}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && otp && !loading) {
-                  handleVerifyOtp();
-                }
-              }}
-              ref={otpInputRef}
-              className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-gray-50 text-gray-700 placeholder-gray-500 focus:outline-none focus:border-black"
-            />
+            <div className={`gradient-border ${otp.length > 0 ? 'gradient-border-static' : ''}`}>
+              <div className="input-content">
+                <Input
+                  type='text'
+                  placeholder='Enter the code sent to your phone'
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value)}
+                  maxLength={6}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && otp && !loading) {
+                      handleVerifyOtp();
+                    }
+                  }}
+                  ref={otpInputRef}
+                  className="w-full p-6 rounded-lg border-none bg-transparent text-gray-700 placeholder-gray-500 focus:outline-none"
+                />
+              </div>
+            </div>
           )}
         </div>
         
