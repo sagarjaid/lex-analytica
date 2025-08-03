@@ -3,7 +3,6 @@
 "use client";
 
 import { Suspense, useEffect, useMemo } from "react";
-import Header from "@/components/Header";
 import { User } from "@supabase/supabase-js";
 
 import { createClient } from "@/lib/supabase/client";

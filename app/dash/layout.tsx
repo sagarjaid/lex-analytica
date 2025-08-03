@@ -2,7 +2,7 @@
 
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Suspense } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter, usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -97,7 +97,9 @@ export default function DashboardLayout({
 
   return (
     <div className="min-h-screen max-w-5xl mx-auto bg-background">
-      <Header handleSignOut={handleSignOut} user={user} router={router} />
+      <Suspense fallback={<div>Loading...</div>}>
+        <Header handleSignOut={handleSignOut} user={user} router={router} />
+      </Suspense>
 
       <div className="flex flex-col md:flex-row mt-2 min-h-screen">
         {/* Sidebar */}

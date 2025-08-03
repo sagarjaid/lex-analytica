@@ -35,7 +35,7 @@ export default function Home() {
           We are working on few new features, Errors may occur
         </div> */}
         <div className="flex max-w-5xl w-full gap-4 flex-col items-center justify-center ">
-          <Suspense>
+          <Suspense fallback={<div>Loading...</div>}>
             <Header user={null} router={null} />
           </Suspense>
         </div>
@@ -50,7 +50,9 @@ export default function Home() {
             </p>
           </div>
 
-          <Phone className="w-72 h-auto mx-auto" />
+          <Suspense fallback={<div>Loading...</div>}>
+            <Phone className="w-72 h-auto mx-auto" />
+          </Suspense>
         </section>
 
         <div className="flex max-w-5xl w-full gap-4 flex-col items-center justify-center ">

@@ -80,7 +80,7 @@ const Problem = () => {
           FUN FACT
         </p>
         <h2 className='max-w-4xl mx-auto font-extrabold text-3xl md:text-4xl tracking-tight mb-6 md:mb-8 leading-10'>
-          75% People just ignore reminder notifications set by themselves ; don't be that person
+          75% People just ignore reminder notifications set by themselves ; don&apos;t be that person
         </h2>
         <p className='max-w-xl mx-auto text-lg opacity-90 leading-relaxed mb-12 md:mb-20'>
           Yup, Just another AI reminder app ;D

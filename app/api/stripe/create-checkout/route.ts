@@ -1,7 +1,7 @@
 /** @format */
 
 import { createCheckout } from '@/lib/stripe';
-import { createClient } from '@/lib/upabase/server';
+import { createClient } from '@/lib/supabase/server';
 import { NextRequest, NextResponse } from 'next/server';
 
 // This function is used to create a Stripe Checkout Session (one-time payment or subscription)
