@@ -143,6 +143,9 @@ export default function LoginPage() {
                       country={'us'}
                       value={phoneNumber}
                       onChange={setPhoneNumber}
+                      enableSearch={true}
+                      searchPlaceholder="Search country..."
+                      searchNotFound="No country found"
                       inputStyle={{
                         fontFamily: '"Bricolage Grotesque", sans-serif',
                         fontWeight: '500',
@@ -169,6 +172,18 @@ export default function LoginPage() {
                       dropdownStyle={{
                         fontFamily: '"Bricolage Grotesque", sans-serif',
                         fontWeight: '500',
+                        maxHeight: '200px',
+                        overflowY: 'auto',
+                      }}
+                      searchStyle={{
+                        fontFamily: '"Bricolage Grotesque", sans-serif',
+                        fontWeight: '500',
+                        padding: '8px 12px',
+                        border: '1px solid #E7E5E4',
+                        borderRadius: '4px',
+                        fontSize: '14px',
+                        width: '100%',
+                        marginBottom: '8px',
                       }}
                       containerStyle={{
                         width: '100%',

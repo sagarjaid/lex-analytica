@@ -55,6 +55,7 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const [user, setUser] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
   const pathname = usePathname();
   const supabase = createClient();
@@ -66,17 +67,30 @@ export default function DashboardLayout({
         data: { user },
       } = await supabase.auth.getUser();
       setUser(user);
+      
+      // Redirect to homepage if no user is found
+      if (!user) {
+        router.push("/");
+      }
+      setIsLoading(false);
     };
     getUser();
 
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
+      const currentUser = session?.user ?? null;
+      setUser(currentUser);
+      
+      // Redirect to homepage if user signs out or session becomes null
+      if (!currentUser) {
+        router.push("/");
+      }
+      setIsLoading(false);
     });
 
     return () => subscription.unsubscribe();
-  }, [supabase.auth]);
+  }, [supabase.auth, router]);
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
@@ -94,6 +108,23 @@ export default function DashboardLayout({
     }
     return pathname === href || pathname.startsWith(href + "/");
   };
+
+  // Show loading state while checking authentication
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="flex items-center gap-2">
+          <LoaderPinwheel className="w-6 h-6 animate-pulse" />
+          <span>Loading...</span>
+        </div>
+      </div>
+    );
+  }
+
+  // Don't render the dashboard if no user is authenticated
+  if (!user) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen max-w-5xl mx-auto bg-background">

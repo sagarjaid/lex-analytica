@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/bootstrap.css';
+import './phone-input-custom.css';
 import { Sparkle } from 'lucide-react';
 
 const Phone = ({ className = '', ...props }) => {
@@ -129,6 +130,7 @@ const Phone = ({ className = '', ...props }) => {
                   country={'us'}
                   value={phoneNumber}
                   onChange={setPhoneNumber}
+                  enableSearch={true}
                   inputStyle={{
                     fontFamily: '"Bricolage Grotesque", sans-serif',
                     fontWeight: '500',
