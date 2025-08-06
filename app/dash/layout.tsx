@@ -101,7 +101,7 @@ export default function DashboardLayout({
         <Header handleSignOut={handleSignOut} user={user} router={router} />
       </Suspense>
 
-      <div className="flex flex-col md:flex-row mt-2 min-h-screen">
+      <div className="flex flex-col md:flex-row min-h-screen">
         {/* Sidebar */}
         <aside className="w-48 hidden sticky left-0 top-0 md:w-56 flex-shrink-0 md:flex flex-col justify-between border-r h-auto md:h-[calc(100vh-20px)] p-4">
           <nav className="space-y-1 md:space-y-2">

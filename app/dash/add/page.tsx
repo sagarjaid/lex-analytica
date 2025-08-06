@@ -14,7 +14,11 @@ import PhoneInput from "react-phone-input-2";
 
 import "react-phone-input-2/lib/bootstrap.css";
 
+import TimezoneSelect from "react-timezone-select";
+
 import Link from "next/link";
+
+import { timezones as phpTimezones } from "./timezone";
 import { LayoutDashboard, Target, Tags, Plus, RefreshCw } from "lucide-react";
 import ThemeToggle from "@/components/ThemeToggle";
 
@@ -35,6 +39,7 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
+
 import axios from "axios";
 import {
   Card,
@@ -50,6 +55,8 @@ import { Clock, Globe, Repeat, Calendar } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CronExpressionParser } from "cron-parser";
 import { DateTime } from "luxon";
+import { formatInTimeZone } from 'date-fns-tz';
+import { Goal } from "@/types";
 
 interface JobSchedule {
   timezone: string;
@@ -61,485 +68,7 @@ interface JobSchedule {
   wdays: number[];
 }
 
-const phpTimezones = [
-  // Africa
-  "Africa/Abidjan",
-  "Africa/Accra",
-  "Africa/Addis_Ababa",
-  "Africa/Algiers",
-  "Africa/Asmara",
-  "Africa/Asmera",
-  "Africa/Bamako",
-  "Africa/Bangui",
-  "Africa/Banjul",
-  "Africa/Bissau",
-  "Africa/Blantyre",
-  "Africa/Brazzaville",
-  "Africa/Bujumbura",
-  "Africa/Cairo",
-  "Africa/Casablanca",
-  "Africa/Ceuta",
-  "Africa/Conakry",
-  "Africa/Dakar",
-  "Africa/Dar_es_Salaam",
-  "Africa/Djibouti",
-  "Africa/Douala",
-  "Africa/El_Aaiun",
-  "Africa/Freetown",
-  "Africa/Gaborone",
-  "Africa/Harare",
-  "Africa/Johannesburg",
-  "Africa/Juba",
-  "Africa/Kampala",
-  "Africa/Khartoum",
-  "Africa/Kigali",
-  "Africa/Kinshasa",
-  "Africa/Lagos",
-  "Africa/Libreville",
-  "Africa/Lome",
-  "Africa/Luanda",
-  "Africa/Lubumbashi",
-  "Africa/Lusaka",
-  "Africa/Malabo",
-  "Africa/Maputo",
-  "Africa/Maseru",
-  "Africa/Mbabane",
-  "Africa/Mogadishu",
-  "Africa/Monrovia",
-  "Africa/Nairobi",
-  "Africa/Ndjamena",
-  "Africa/Niamey",
-  "Africa/Nouakchott",
-  "Africa/Ouagadougou",
-  "Africa/Porto-Novo",
-  "Africa/Sao_Tome",
-  "Africa/Timbuktu",
-  "Africa/Tripoli",
-  "Africa/Tunis",
-  "Africa/Windhoek",
-  // America
-  "America/Adak",
-  "America/Anchorage",
-  "America/Anguilla",
-  "America/Antigua",
-  "America/Araguaina",
-  "America/Argentina/Buenos_Aires",
-  "America/Argentina/Catamarca",
-  "America/Argentina/ComodRivadavia",
-  "America/Argentina/Cordoba",
-  "America/Argentina/Jujuy",
-  "America/Argentina/La_Rioja",
-  "America/Argentina/Mendoza",
-  "America/Argentina/Rio_Gallegos",
-  "America/Argentina/Salta",
-  "America/Argentina/San_Juan",
-  "America/Argentina/San_Luis",
-  "America/Argentina/Tucuman",
-  "America/Argentina/Ushuaia",
-  "America/Aruba",
-  "America/Asuncion",
-  "America/Atikokan",
-  "America/Atka",
-  "America/Bahia",
-  "America/Bahia_Banderas",
-  "America/Barbados",
-  "America/Belem",
-  "America/Belize",
-  "America/Blanc-Sablon",
-  "America/Boa_Vista",
-  "America/Bogota",
-  "America/Boise",
-  "America/Cambridge_Bay",
-  "America/Campo_Grande",
-  "America/Cancun",
-  "America/Caracas",
-  "America/Cayenne",
-  "America/Cayman",
-  "America/Chicago",
-  "America/Chihuahua",
-  "America/Coral_Harbour",
-  "America/Costa_Rica",
-  "America/Creston",
-  "America/Cuiaba",
-  "America/Curacao",
-  "America/Danmarkshavn",
-  "America/Dawson",
-  "America/Dawson_Creek",
-  "America/Denver",
-  "America/Detroit",
-  "America/Dominica",
-  "America/Edmonton",
-  "America/Eirunepe",
-  "America/El_Salvador",
-  "America/Ensenada",
-  "America/Fort_Nelson",
-  "America/Fortaleza",
-  "America/Glace_Bay",
-  "America/Godthab",
-  "America/Goose_Bay",
-  "America/Grand_Turk",
-  "America/Grenada",
-  "America/Guadeloupe",
-  "America/Guatemala",
-  "America/Guayaquil",
-  "America/Guyana",
-  "America/Halifax",
-  "America/Havana",
-  "America/Hermosillo",
-  "America/Indiana/Indianapolis",
-  "America/Indiana/Knox",
-  "America/Indiana/Marengo",
-  "America/Indiana/Petersburg",
-  "America/Indiana/Tell_City",
-  "America/Indiana/Vevay",
-  "America/Indiana/Vincennes",
-  "America/Indiana/Winamac",
-  "America/Inuvik",
-  "America/Iqaluit",
-  "America/Jamaica",
-  "America/Jujuy",
-  "America/Juneau",
-  "America/Kentucky/Louisville",
-  "America/Kentucky/Monticello",
-  "America/Knox_IN",
-  "America/Kralendijk",
-  "America/La_Paz",
-  "America/Lima",
-  "America/Los_Angeles",
-  "America/Louisville",
-  "America/Lower_Princes",
-  "America/Maceio",
-  "America/Managua",
-  "America/Manaus",
-  "America/Marigot",
-  "America/Martinique",
-  "America/Matamoros",
-  "America/Mazatlan",
-  "America/Mendoza",
-  "America/Menominee",
-  "America/Merida",
-  "America/Metlakatla",
-  "America/Mexico_City",
-  "America/Miquelon",
-  "America/Moncton",
-  "America/Monterrey",
-  "America/Montevideo",
-  "America/Montreal",
-  "America/Montserrat",
-  "America/Nassau",
-  "America/New_York",
-  "America/Nipigon",
-  "America/Nome",
-  "America/Noronha",
-  "America/North_Dakota/Beulah",
-  "America/North_Dakota/Center",
-  "America/North_Dakota/New_Salem",
-  "America/Ojinaga",
-  "America/Panama",
-  "America/Pangnirtung",
-  "America/Paramaribo",
-  "America/Phoenix",
-  "America/Port-au-Prince",
-  "America/Port_of_Spain",
-  "America/Porto_Acre",
-  "America/Porto_Velho",
-  "America/Puerto_Rico",
-  "America/Punta_Arenas",
-  "America/Rainy_River",
-  "America/Rankin_Inlet",
-  "America/Recife",
-  "America/Regina",
-  "America/Resolute",
-  "America/Rio_Branco",
-  "America/Rosario",
-  "America/Santa_Isabel",
-  "America/Santarem",
-  "America/Santiago",
-  "America/Santo_Domingo",
-  "America/Sao_Paulo",
-  "America/Scoresbysund",
-  "America/Shiprock",
-  "America/Sitka",
-  "America/St_Barthelemy",
-  "America/St_Johns",
-  "America/St_Kitts",
-  "America/St_Lucia",
-  "America/St_Thomas",
-  "America/St_Vincent",
-  "America/Swift_Current",
-  "America/Tegucigalpa",
-  "America/Thule",
-  "America/Thunder_Bay",
-  "America/Tijuana",
-  "America/Toronto",
-  "America/Tortola",
-  "America/Vancouver",
-  "America/Whitehorse",
-  "America/Winnipeg",
-  "America/Yakutat",
-  "America/Yellowknife",
-  // Antarctica
-  "Antarctica/Casey",
-  "Antarctica/Davis",
-  "Antarctica/DumontDUrville",
-  "Antarctica/Macquarie",
-  "Antarctica/Mawson",
-  "Antarctica/McMurdo",
-  "Antarctica/Palmer",
-  "Antarctica/Rothera",
-  "Antarctica/South_Pole",
-  "Antarctica/Syowa",
-  "Antarctica/Troll",
-  "Antarctica/Vostok",
-  // Arctic
-  "Arctic/Longyearbyen",
-  // Asia
-  "Asia/Aden",
-  "Asia/Almaty",
-  "Asia/Amman",
-  "Asia/Anadyr",
-  "Asia/Aqtau",
-  "Asia/Aqtobe",
-  "Asia/Ashgabat",
-  "Asia/Ashkhabad",
-  "Asia/Atyrau",
-  "Asia/Baghdad",
-  "Asia/Bahrain",
-  "Asia/Baku",
-  "Asia/Bangkok",
-  "Asia/Barnaul",
-  "Asia/Beirut",
-  "Asia/Bishkek",
-  "Asia/Brunei",
-  "Asia/Calcutta",
-  "Asia/Chita",
-  "Asia/Choibalsan",
-  "Asia/Chongqing",
-  "Asia/Chungking",
-  "Asia/Colombo",
-  "Asia/Dacca",
-  "Asia/Damascus",
-  "Asia/Dhaka",
-  "Asia/Dili",
-  "Asia/Dubai",
-  "Asia/Dushanbe",
-  "Asia/Famagusta",
-  "Asia/Gaza",
-  "Asia/Harbin",
-  "Asia/Hebron",
-  "Asia/Ho_Chi_Minh",
-  "Asia/Hong_Kong",
-  "Asia/Hovd",
-  "Asia/Irkutsk",
-  "Asia/Istanbul",
-  "Asia/Jakarta",
-  "Asia/Jayapura",
-  "Asia/Jerusalem",
-  "Asia/Kabul",
-  "Asia/Kamchatka",
-  "Asia/Karachi",
-  "Asia/Kashgar",
-  "Asia/Kathmandu",
-  "Asia/Katmandu",
-  "Asia/Khandyga",
-  "Asia/Kolkata",
-  "Asia/Krasnoyarsk",
-  "Asia/Kuala_Lumpur",
-  "Asia/Kuching",
-  "Asia/Kuwait",
-  "Asia/Macao",
-  "Asia/Macau",
-  "Asia/Magadan",
-  "Asia/Makassar",
-  "Asia/Manila",
-  "Asia/Muscat",
-  "Asia/Nicosia",
-  "Asia/Novokuznetsk",
-  "Asia/Novosibirsk",
-  "Asia/Omsk",
-  "Asia/Oral",
-  "Asia/Phnom_Penh",
-  "Asia/Pontianak",
-  "Asia/Pyongyang",
-  "Asia/Qatar",
-  "Asia/Qostanay",
-  "Asia/Qyzylorda",
-  "Asia/Rangoon",
-  "Asia/Riyadh",
-  "Asia/Saigon",
-  "Asia/Sakhalin",
-  "Asia/Samarkand",
-  "Asia/Seoul",
-  "Asia/Shanghai",
-  "Asia/Singapore",
-  "Asia/Srednekolymsk",
-  "Asia/Taipei",
-  "Asia/Tashkent",
-  "Asia/Tbilisi",
-  "Asia/Tehran",
-  "Asia/Tel_Aviv",
-  "Asia/Thimbu",
-  "Asia/Thimphu",
-  "Asia/Tokyo",
-  "Asia/Tomsk",
-  "Asia/Ujung_Pandang",
-  "Asia/Ulaanbaatar",
-  "Asia/Ulan_Bator",
-  "Asia/Urumqi",
-  "Asia/Ust-Nera",
-  "Asia/Vientiane",
-  "Asia/Vladivostok",
-  "Asia/Yakutsk",
-  "Asia/Yangon",
-  "Asia/Yekaterinburg",
-  "Asia/Yerevan",
-  // Atlantic
-  "Atlantic/Azores",
-  "Atlantic/Bermuda",
-  "Atlantic/Canary",
-  "Atlantic/Cape_Verde",
-  "Atlantic/Faeroe",
-  "Atlantic/Faroe",
-  "Atlantic/Jan_Mayen",
-  "Atlantic/Madeira",
-  "Atlantic/Reykjavik",
-  "Atlantic/South_Georgia",
-  "Atlantic/St_Helena",
-  "Atlantic/Stanley",
-  // Australia
-  "Australia/Adelaide",
-  "Australia/Brisbane",
-  "Australia/Broken_Hill",
-  "Australia/Currie",
-  "Australia/Darwin",
-  "Australia/Eucla",
-  "Australia/Hobart",
-  "Australia/Lindeman",
-  "Australia/Lord_Howe",
-  "Australia/Melbourne",
-  "Australia/Perth",
-  "Australia/Sydney",
-  // Europe
-  "Europe/Amsterdam",
-  "Europe/Andorra",
-  "Europe/Astrakhan",
-  "Europe/Athens",
-  "Europe/Belgrade",
-  "Europe/Berlin",
-  "Europe/Bratislava",
-  "Europe/Brussels",
-  "Europe/Bucharest",
-  "Europe/Budapest",
-  "Europe/Busingen",
-  "Europe/Chisinau",
-  "Europe/Copenhagen",
-  "Europe/Dublin",
-  "Europe/Gibraltar",
-  "Europe/Guernsey",
-  "Europe/Helsinki",
-  "Europe/Isle_of_Man",
-  "Europe/Istanbul",
-  "Europe/Jersey",
-  "Europe/Kaliningrad",
-  "Europe/Kiev",
-  "Europe/Kirov",
-  "Europe/Lisbon",
-  "Europe/Ljubljana",
-  "Europe/London",
-  "Europe/Luxembourg",
-  "Europe/Madrid",
-  "Europe/Malta",
-  "Europe/Mariehamn",
-  "Europe/Minsk",
-  "Europe/Monaco",
-  "Europe/Moscow",
-  "Europe/Nicosia",
-  "Europe/Oslo",
-  "Europe/Paris",
-  "Europe/Podgorica",
-  "Europe/Prague",
-  "Europe/Riga",
-  "Europe/Rome",
-  "Europe/Samara",
-  "Europe/San_Marino",
-  "Europe/Sarajevo",
-  "Europe/Saratov",
-  "Europe/Simferopol",
-  "Europe/Skopje",
-  "Europe/Sofia",
-  "Europe/Stockholm",
-  "Europe/Tallinn",
-  "Europe/Tirane",
-  "Europe/Ulyanovsk",
-  "Europe/Uzhgorod",
-  "Europe/Vaduz",
-  "Europe/Vatican",
-  "Europe/Vienna",
-  "Europe/Vilnius",
-  "Europe/Volgograd",
-  "Europe/Warsaw",
-  "Europe/Zagreb",
-  "Europe/Zaporozhye",
-  "Europe/Zurich",
-  // Indian
-  "Indian/Antananarivo",
-  "Indian/Chagos",
-  "Indian/Christmas",
-  "Indian/Cocos",
-  "Indian/Comoro",
-  "Indian/Kerguelen",
-  "Indian/Mahe",
-  "Indian/Maldives",
-  "Indian/Mauritius",
-  "Indian/Mayotte",
-  "Indian/Reunion",
-  // Pacific
-  "Pacific/Apia",
-  "Pacific/Auckland",
-  "Pacific/Bougainville",
-  "Pacific/Chatham",
-  "Pacific/Chuuk",
-  "Pacific/Easter",
-  "Pacific/Efate",
-  "Pacific/Enderbury",
-  "Pacific/Fakaofo",
-  "Pacific/Fiji",
-  "Pacific/Funafuti",
-  "Pacific/Galapagos",
-  "Pacific/Gambier",
-  "Pacific/Guadalcanal",
-  "Pacific/Guam",
-  "Pacific/Honolulu",
-  "Pacific/Johnston",
-  "Pacific/Kanton",
-  "Pacific/Kiritimati",
-  "Pacific/Kosrae",
-  "Pacific/Kwajalein",
-  "Pacific/Majuro",
-  "Pacific/Marquesas",
-  "Pacific/Midway",
-  "Pacific/Nauru",
-  "Pacific/Niue",
-  "Pacific/Norfolk",
-  "Pacific/Noumea",
-  "Pacific/Pago_Pago",
-  "Pacific/Palau",
-  "Pacific/Pitcairn",
-  "Pacific/Pohnpei",
-  "Pacific/Ponape",
-  "Pacific/Port_Moresby",
-  "Pacific/Rarotonga",
-  "Pacific/Saipan",
-  "Pacific/Samoa",
-  "Pacific/Tahiti",
-  "Pacific/Tarawa",
-  "Pacific/Tongatapu",
-  "Pacific/Truk",
-  "Pacific/Wake",
-  "Pacific/Wallis",
-  // UTC
-  "UTC",
-];
+
 
 const weekDays = [
   { value: 0, label: "Sunday" },
@@ -675,15 +204,187 @@ export default function Dashboard() {
   const [weeklyDay, setWeeklyDay] = useState<number>(1);
   const [monthlyDay, setMonthlyDay] = useState<number>(1);
   const [yearlyMonth, setYearlyMonth] = useState<number>(1);
+  // Map browser timezone names to cron-job.org timezone names
+  const mapBrowserTimezone = (browserTz: string): string => {
+    const timezoneMap: Record<string, string> = {
+      // Asia - Legacy mappings
+      "Asia/Calcutta": "Asia/Kolkata",
+      "Asia/Chongqing": "Asia/Shanghai",
+      "Asia/Chungking": "Asia/Shanghai",
+      "Asia/Harbin": "Asia/Shanghai",
+      "Asia/Kashgar": "Asia/Urumqi",
+      "Asia/Ujung_Pandang": "Asia/Makassar",
+      "Asia/Saigon": "Asia/Ho_Chi_Minh",
+      "Asia/Rangoon": "Asia/Yangon",
+      "Asia/Katmandu": "Asia/Kathmandu",
+      "Asia/Thimbu": "Asia/Thimphu",
+      "Asia/Tel_Aviv": "Asia/Jerusalem",
+      "Asia/Ashkhabad": "Asia/Ashgabat",
+      "Asia/Dacca": "Asia/Dhaka",
+      "Asia/Macao": "Asia/Macau",
+      "Asia/Ulan_Bator": "Asia/Ulaanbaatar",
+      "Asia/Istanbul": "Europe/Istanbul",
+      
+      // Europe - Legacy mappings
+      "Europe/Kiev": "Europe/Kyiv",
+      "Europe/Nicosia": "Asia/Nicosia",
+      "Europe/Uzhgorod": "Europe/Uzhgorod",
+      "Europe/Zaporozhye": "Europe/Zaporozhye",
+      "Europe/Tiraspol": "Europe/Chisinau",
+      "Europe/Belfast": "Europe/London",
+      
+      // America - Legacy mappings
+      "America/Godthab": "America/Nuuk",
+      "America/Atka": "America/Adak",
+      "America/Ensenada": "America/Tijuana",
+      "America/Louisville": "America/Kentucky/Louisville",
+      "America/Knox_IN": "America/Indiana/Knox",
+      "America/Indianapolis": "America/Indiana/Indianapolis",
+      "America/Fort_Wayne": "America/Indiana/Indianapolis",
+      "America/Mendoza": "America/Argentina/Mendoza",
+      "America/Rosario": "America/Argentina/Cordoba",
+      "America/Santa_Isabel": "America/Tijuana",
+      "America/Porto_Acre": "America/Rio_Branco",
+      "America/Rainy_River": "America/Winnipeg",
+      "America/Shiprock": "America/Denver",
+      "America/Thunder_Bay": "America/Toronto",
+      "America/Virgin": "America/St_Thomas",
+      "America/Buenos_Aires": "America/Argentina/Buenos_Aires",
+      "America/Catamarca": "America/Argentina/Catamarca",
+      "America/Cordoba": "America/Argentina/Cordoba",
+      "America/Jujuy": "America/Argentina/Jujuy",
+      "America/Montreal": "America/Toronto",
+      "America/Nipigon": "America/Toronto",
+      "America/Pangnirtung": "America/Iqaluit",
+      "America/Coral_Harbour": "America/Atikokan",
+      
+      // Antarctica - Legacy mappings
+      "Antarctica/South_Pole": "Antarctica/McMurdo",
+      
+      // Atlantic - Legacy mappings
+      "Atlantic/Faeroe": "Atlantic/Faroe",
+      "Atlantic/Jan_Mayen": "Atlantic/Jan_Mayen",
+      
+      // Australia - Legacy mappings
+      "Australia/Currie": "Australia/Hobart",
+      "Australia/ACT": "Australia/Sydney",
+      "Australia/Canberra": "Australia/Sydney",
+      "Australia/LHI": "Australia/Lord_Howe",
+      "Australia/North": "Australia/Darwin",
+      "Australia/NSW": "Australia/Sydney",
+      "Australia/Queensland": "Australia/Brisbane",
+      "Australia/South": "Australia/Adelaide",
+      "Australia/Tasmania": "Australia/Hobart",
+      "Australia/Victoria": "Australia/Melbourne",
+      "Australia/West": "Australia/Perth",
+      "Australia/Yancowinna": "Australia/Broken_Hill",
+      
+      // Pacific - Legacy mappings
+      "Pacific/Johnston": "Pacific/Honolulu",
+      "Pacific/Ponape": "Pacific/Pohnpei",
+      "Pacific/Samoa": "Pacific/Apia",
+      "Pacific/Truk": "Pacific/Chuuk",
+      "Pacific/Enderbury": "Pacific/Kanton",
+      "Pacific/Yap": "Pacific/Chuuk",
+      
+      // Africa - Legacy mappings
+      "Africa/Asmera": "Africa/Asmara",
+      "Africa/Timbuktu": "Africa/Bamako",
+      
+      // Brazil - Legacy mappings
+      "Brazil/Acre": "America/Rio_Branco",
+      "Brazil/DeNoronha": "America/Noronha",
+      "Brazil/East": "America/Sao_Paulo",
+      "Brazil/West": "America/Manaus",
+      
+      // Canada - Legacy mappings
+      "Canada/Atlantic": "America/Halifax",
+      "Canada/Central": "America/Winnipeg",
+      "Canada/Eastern": "America/Toronto",
+      "Canada/Mountain": "America/Edmonton",
+      "Canada/Newfoundland": "America/St_Johns",
+      "Canada/Pacific": "America/Vancouver",
+      "Canada/Saskatchewan": "America/Regina",
+      "Canada/Yukon": "America/Whitehorse",
+      
+      // US - Legacy mappings
+      "US/Alaska": "America/Anchorage",
+      "US/Aleutian": "America/Adak",
+      "US/Arizona": "America/Phoenix",
+      "US/Central": "America/Chicago",
+      "US/East-Indiana": "America/Indiana/Indianapolis",
+      "US/Eastern": "America/New_York",
+      "US/Hawaii": "Pacific/Honolulu",
+      "US/Indiana-Starke": "America/Indiana/Knox",
+      "US/Michigan": "America/Detroit",
+      "US/Mountain": "America/Denver",
+      "US/Pacific": "America/Los_Angeles",
+      "US/Samoa": "Pacific/Pago_Pago",
+      
+      // Other legacy mappings
+      "CET": "Europe/Paris",
+      "CST6CDT": "America/Chicago",
+      "EET": "Europe/Athens",
+      "EST": "America/New_York",
+      "EST5EDT": "America/New_York",
+      "MST": "America/Denver",
+      "MST7MDT": "America/Denver",
+      "PST8PDT": "America/Los_Angeles",
+      "WET": "Europe/London",
+      "WE": "Europe/London",
+      "W-SU": "Europe/Moscow",
+      "GMT": "UTC",
+      "GMT+0": "UTC",
+      "GMT-0": "UTC",
+      "GMT0": "UTC",
+      "Greenwich": "UTC",
+      "Universal": "UTC",
+      "Zulu": "UTC",
+      "Hongkong": "Asia/Hong_Kong",
+      "Iceland": "Atlantic/Reykjavik",
+      "Iran": "Asia/Tehran",
+      "Israel": "Asia/Jerusalem",
+      "Jamaica": "America/Jamaica",
+      "Japan": "Asia/Tokyo",
+      "Kwajalein": "Pacific/Kwajalein",
+      "Libya": "Africa/Tripoli",
+      "MET": "Europe/Berlin",
+      "Navajo": "America/Denver",
+      "NZ": "Pacific/Auckland",
+      "NZ-CHAT": "Pacific/Chatham",
+      "Poland": "Europe/Warsaw",
+      "Portugal": "Europe/Lisbon",
+      "PRC": "Asia/Shanghai",
+      "ROC": "Asia/Taipei",
+      "ROK": "Asia/Seoul",
+      "Singapore": "Asia/Singapore",
+      "Turkey": "Europe/Istanbul",
+      "UCT": "UTC",
+      "Factory": "UTC",
+      "GB": "Europe/London",
+      "GB-Eire": "Europe/London",
+      "Eire": "Europe/Dublin",
+    };
+    
+    return timezoneMap[browserTz] || browserTz;
+  };
+
   const [yearlyDay, setYearlyDay] = useState<number>(1);
-  const [schedule, setSchedule] = useState<JobSchedule>({
-    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-    expiresAt: 0,
-    hours: [],
-    mdays: [],
-    minutes: [],
-    months: [],
-    wdays: [],
+  const [schedule, setSchedule] = useState<JobSchedule>(() => {
+    const browserTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const mappedTz = mapBrowserTimezone(browserTz);
+    const supportedTz = phpTimezones.find(tz => tz === mappedTz);
+    const defaultTz = supportedTz || "UTC";
+    
+    return {
+      timezone: defaultTz,
+      expiresAt: 0,
+      hours: [],
+      mdays: [],
+      minutes: [],
+      months: [],
+      wdays: [],
+    };
   });
   const [expirationDate, setExpirationDate] = useState("");
   const [expirationTime, setExpirationTime] = useState("");
@@ -849,7 +550,7 @@ export default function Dashboard() {
       return `Job will run once on ${date.toLocaleDateString()} at ${date.toLocaleTimeString(
         [],
         { hour: "2-digit", minute: "2-digit" }
-      )}`;
+      )} and expire on the same day`;
     }
 
     if (recurringType === "simple") {
@@ -1021,87 +722,238 @@ export default function Dashboard() {
     return "th";
   };
 
+  const getTimezoneDisplayName = (timezone: string): string => {
+    return timezone;
+  };
+
+  const getTimezoneOffset = (timezone: string): string => {
+    try {
+      // Use date-fns-tz for accurate, dynamic timezone offset calculation
+      const now = new Date();
+      const utcTime = formatInTimeZone(now, 'UTC', 'yyyy-MM-dd HH:mm:ss');
+      const targetTime = formatInTimeZone(now, timezone, 'yyyy-MM-dd HH:mm:ss');
+      
+      // Parse the times and calculate difference
+      const utcDate = new Date(utcTime + 'Z'); // Add Z to make it UTC
+      const targetDate = new Date(targetTime + 'Z'); // Add Z to make it UTC
+      
+      const diffMs = targetDate.getTime() - utcDate.getTime();
+      const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+      const diffMinutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+      
+      const sign = diffHours >= 0 ? "+" : "-";
+      const hours = Math.abs(diffHours).toString().padStart(2, "0");
+      const minutes = Math.abs(diffMinutes).toString().padStart(2, "0");
+      
+      return `${sign}${hours}:${minutes}`;
+    } catch (error) {
+      // Fallback to hardcoded map for edge cases
+      const offsetMap: Record<string, string> = {
+        "Asia/Kolkata": "+05:30",
+        "Asia/Calcutta": "+05:30",
+        "Asia/Dhaka": "+06:00",
+        "Asia/Karachi": "+05:00",
+        "Asia/Tashkent": "+05:00",
+        "Asia/Almaty": "+06:00",
+        "Asia/Novosibirsk": "+07:00",
+        "Asia/Krasnoyarsk": "+07:00",
+        "Asia/Irkutsk": "+08:00",
+        "Asia/Yakutsk": "+09:00",
+        "Asia/Vladivostok": "+10:00",
+        "Asia/Magadan": "+11:00",
+        "Asia/Kamchatka": "+12:00",
+        "Asia/Tokyo": "+09:00",
+        "Asia/Seoul": "+09:00",
+        "Asia/Shanghai": "+08:00",
+        "Asia/Hong_Kong": "+08:00",
+        "Asia/Singapore": "+08:00",
+        "Asia/Bangkok": "+07:00",
+        "Asia/Ho_Chi_Minh": "+07:00",
+        "Asia/Jakarta": "+07:00",
+        "Asia/Manila": "+08:00",
+        "Asia/Dubai": "+04:00",
+        "Asia/Riyadh": "+03:00",
+        "Asia/Tehran": "+03:30",
+        "Asia/Jerusalem": "+02:00",
+        "Europe/London": "+00:00",
+        "Europe/Paris": "+01:00",
+        "Europe/Berlin": "+01:00",
+        "Europe/Rome": "+01:00",
+        "Europe/Moscow": "+03:00",
+        "Europe/Kyiv": "+02:00",
+        "America/New_York": "-05:00",
+        "America/Chicago": "-06:00",
+        "America/Denver": "-07:00",
+        "America/Los_Angeles": "-08:00",
+        "America/Toronto": "-05:00",
+        "America/Vancouver": "-08:00",
+        "America/Sao_Paulo": "-03:00",
+        "America/Argentina/Buenos_Aires": "-03:00",
+        "Australia/Sydney": "+10:00",
+        "Australia/Melbourne": "+10:00",
+        "Australia/Perth": "+08:00",
+        "Pacific/Auckland": "+12:00",
+        "Pacific/Honolulu": "-10:00",
+        "UTC": "+00:00",
+      };
+      
+      return offsetMap[timezone] || "?";
+    }
+  };
+
   const handleToggle = (value: boolean) => {
     setIsActive(value);
   };
 
   const handleClick = async () => {
-    let finalSchedule: JobSchedule;
-
-    if (jobType === "onetime") {
-      const [hour, minute] = oneTimeTime.split(":").map(Number);
-      const executionDate = new Date(`${oneTimeDate}T${oneTimeTime}`);
-      const day = executionDate.getDate();
-      const month = executionDate.getMonth() + 1;
-
-      finalSchedule = {
-        ...schedule,
-        hours: [hour],
-        minutes: [minute],
-        mdays: [day],
-        months: [month],
-        wdays: [-1],
-      };
-    } else {
-      finalSchedule =
-        recurringType === "simple"
-          ? generateScheduleFromSimple()
-          : {
-              ...schedule,
-              expiresAt: formatDateTimeToNumber(expirationDate, expirationTime),
-            };
+    if (!user) {
+      alert("Please login to create a goal");
+      return;
     }
 
-    const postData = {
-      phoneNumber: `+${phoneNumber}`,
-      task: `${persona}.${context}`,
-      language: language,
-      voice: aiVoice,
-    };
-
-    const url = "https://api.cron-job.org/jobs";
-    const auth = `Bearer ${process.env.NEXT_PUBLIC_CORN_AUTH}`;
-
-    const jobData = {
-      job: {
-        enabled: isActive,
-        title: goalName,
-        saveResponses: true,
-        url: "https://nevermissai.com/api/blondai",
-        auth: {
-          enable: false,
-          user: "",
-          password: "",
-        },
-        notification: {
-          onFailure: false,
-          onSuccess: false,
-          onDisable: true,
-        },
-        extendedData: {
-          headers: [] as string[],
-          body: JSON.stringify(postData),
-        },
-        type: 0,
-        requestTimeout: 30,
-        redirectSuccess: false,
-        folderId: 0,
-        schedule: finalSchedule,
-        requestMethod: 1,
-      },
-    };
+    if (!goalName.trim() || !persona.trim() || !context.trim()) {
+      alert("Please fill in all required fields");
+      return;
+    }
 
     try {
+      let finalSchedule: JobSchedule;
+      let expiresAt: Date | null = null;
+
+      if (jobType === "onetime") {
+        const [hour, minute] = oneTimeTime.split(":").map(Number);
+        const executionDate = new Date(`${oneTimeDate}T${oneTimeTime}`);
+        const day = executionDate.getDate();
+        const month = executionDate.getMonth() + 1;
+
+        // For one-time jobs, set expiration to 6 hours after execution time
+        // This ensures the job expires after execution or if it fails to execute
+        expiresAt = new Date(executionDate.getTime() + 6 * 60 * 60 * 1000);
+
+        // Calculate expiration time for cron-job.org (6 hours after execution)
+        const expirationDateTime = new Date(executionDate.getTime() + 6 * 60 * 60 * 1000);
+        const expirationDateStr = expirationDateTime.toISOString().slice(0, 10); // YYYY-MM-DD
+        const expirationTimeStr = expirationDateTime.toTimeString().slice(0, 5); // HH:MM
+        
+        finalSchedule = {
+          ...schedule,
+          hours: [hour],
+          minutes: [minute],
+          mdays: [day],
+          months: [month],
+          wdays: [-1],
+          expiresAt: formatDateTimeToNumber(expirationDateStr, expirationTimeStr), // Set to 6 hours after execution for cron-job.org
+        };
+      } else {
+        finalSchedule =
+          recurringType === "simple"
+            ? generateScheduleFromSimple()
+            : {
+                ...schedule,
+                expiresAt: formatDateTimeToNumber(expirationDate, expirationTime),
+              };
+        
+        // For recurring jobs, set expiration if specified by the user
+        // This allows users to set a custom expiration date/time for recurring jobs
+        if (expirationDate && expirationTime) {
+          expiresAt = new Date(`${expirationDate}T${expirationTime}`);
+        }
+      }
+
+      // First, create the goal in the database
+      const { data: goal, error: goalError } = await supabase
+        .from("goals")
+        .insert({
+          user_id: user.id,
+          title: goalName,
+          description: `${persona}: ${context}`,
+          phone_number: `+${phoneNumber}`,
+          schedule: finalSchedule,
+          schedule_type: jobType,
+          is_active: isActive,
+          status: isActive ? 'active' : 'paused',
+          persona: persona,
+          context: context,
+          language: language,
+          voice: aiVoice,
+          expires_at: expiresAt,
+        })
+        .select()
+        .single();
+
+      if (goalError) {
+        console.error("Error creating goal:", goalError);
+        alert("Error creating goal in database. Please try again.");
+        return;
+      }
+
+      // Create the cron job
+      const postData = {
+        goal_id: goal.id,
+        phoneNumber: `+${phoneNumber}`,
+        task: `${persona}. ${context}`,
+        language: language,
+        voice: aiVoice,
+      };
+
+      const url = "https://api.cron-job.org/jobs";
+      const auth = `Bearer ${process.env.NEXT_PUBLIC_CORN_AUTH}`;
+
+      const jobData = {
+        job: {
+          enabled: isActive,
+          title: goalName,
+          saveResponses: true,
+          url: "https://nevermissai.com/api/blondai",
+          auth: {
+            enable: false,
+            user: "",
+            password: "",
+          },
+          notification: {
+            onFailure: false,
+            onSuccess: false,
+            onDisable: true,
+          },
+          extendedData: {
+            headers: [] as string[],
+            body: JSON.stringify(postData),
+          },
+          type: 0,
+          requestTimeout: 30,
+          redirectSuccess: false,
+          folderId: 0,
+          schedule: finalSchedule,
+          requestMethod: 1,
+        },
+      };
+
       const response = await axios.put(url, jobData, {
         headers: {
           "Content-Type": "application/json",
           Authorization: auth,
         },
       });
-      console.log("Job scheduled successfully:", response.data);
+
+      if (response.data && response.data.jobId) {
+        // Update the goal with the cron job ID
+        const { error: updateError } = await supabase
+          .from("goals")
+          .update({ cron_job_id: response.data.jobId.toString() })
+          .eq("id", goal.id);
+
+        if (updateError) {
+          console.error("Error updating goal with cron job ID:", updateError);
+        }
+      }
+
+      console.log("Goal and job created successfully:", response.data);
       alert("Goal created successfully!");
+      
+      // Redirect to goals page
+      window.location.href = "/dash/goals";
     } catch (error) {
-      console.error("Error scheduling job:", error);
+      console.error("Error creating goal:", error);
       alert("Error creating goal. Please try again.");
     }
   };
@@ -1124,16 +976,11 @@ export default function Dashboard() {
     getUser();
   }, [supabase]);
 
-  useEffect(() => {
-    if (!userChangedTimezone) {
-      const browserTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-      setSchedule((prev) => ({ ...prev, timezone: browserTz }));
-    }
-  }, [userChangedTimezone]);
+
 
   return (
     <>
-      <div className="flex flex-col items-center pt-6 px-6 pb-24 w-full">
+      <div className="flex flex-col items-center pt-6 px-6 pb-24 w-full w-full">
         <div className="w-full max-w-2xl md:max-w-4xl">
           <div className="flex justify-between items-center mb-2">
             <h1 className="text-xl  font-extrabold">Add Goal</h1>
@@ -1435,21 +1282,89 @@ export default function Dashboard() {
                     <Globe className="w-4 h-4" />
                     Timezone
                   </Label>
-                  <Select
-                    value={schedule.timezone}
-                    onValueChange={handleTimezoneChange}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {phpTimezones.map((tz) => (
-                        <SelectItem key={tz} value={tz}>
-                          {tz}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <div className="text-xs text-gray-500 mb-2">
+                    Browser: {Intl.DateTimeFormat().resolvedOptions().timeZone}, Current: {schedule.timezone}, UTC: {getTimezoneOffset(schedule.timezone)}
+                    {getTimezoneOffset(schedule.timezone) === "?" && (
+                      <span className="text-orange-600 ml-1">(Timezone not in fallback list)</span>
+                    )}
+                  </div>
+                  <div className="relative">
+                    <style>{`
+                      .css-13cymwt-control {
+                        height: 40px !important;
+                        min-height: 40px !important;
+                        font-size: 14px !important;
+                        border-radius: 6px !important;
+                        border: 1px solid #d1d5db !important;
+                        box-shadow: none !important;
+                      }
+                      .css-hlgwow {
+                        font-size: 14px !important;
+                        padding: 8px 12px !important;
+                        height: 38px !important;
+                        line-height: 1.2 !important;
+                      }
+                      .css-1dimb5e-singleValue {
+                        font-size: 14px !important;
+                        font-weight: normal !important;
+                        line-height: 1.2 !important;
+                      }
+                      .css-19bb58m input {
+                        font-size: 14px !important;
+                        line-height: 1.2 !important;
+                      }
+                      .css-1wy0on6 {
+                        height: 38px !important;
+                      }
+                      .css-1u9des2-indicatorSeparator {
+                        height: 20px !important;
+                        margin: 8px 0 !important;
+                      }
+                      /* Dropdown menu styling */
+                      .css-1nmdiq5-menu {
+                        font-size: 14px !important;
+                        border: 1px solid #d1d5db !important;
+                        border-radius: 6px !important;
+                        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+                      }
+                      .css-1n6sfyn-menu {
+                        font-size: 14px !important;
+                        padding: 4px 0 !important;
+                      }
+                      .css-10wo9uf-option {
+                        font-size: 14px !important;
+                        padding: 8px 12px !important;
+                        line-height: 1.2 !important;
+                        min-height: 36px !important;
+                      }
+                      .css-tr4s17-option {
+                        font-size: 14px !important;
+                        padding: 8px 12px !important;
+                        line-height: 1.2 !important;
+                        min-height: 36px !important;
+                      }
+                      /* Focus and hover states */
+                      .css-13cymwt-control:hover {
+                        border-color: #9ca3af !important;
+                      }
+                      .css-13cymwt-control:focus-within {
+                        border-color: #3b82f6 !important;
+                        box-shadow: 0 0 0 1px #3b82f6 !important;
+                      }
+                    `}</style>
+                    <TimezoneSelect
+                      value={{ value: schedule.timezone, label: schedule.timezone }}
+                      onChange={(tz) => handleTimezoneChange(tz.value)}
+                      timezones={{
+                        ...phpTimezones.reduce((acc, tz) => {
+                          acc[tz] = tz;
+                          return acc;
+                        }, {} as Record<string, string>)
+                      }}
+                      placeholder="Select timezone..."
+                      className="w-full"
+                    />
+                  </div>
                 </div>
 
                 {/* Job Type Selection */}
@@ -1498,7 +1413,7 @@ export default function Dashboard() {
                           <Calendar className="w-5 h-5 text-green-800 mt-0.5" />
                           <div>
                             <h4 className="font-medium text-green-800 mb-1 text-sm">
-                              Execution Preview
+                              Execution & Expiration Preview
                             </h4>
                             <p className="text-green-800 text-xs">
                               {getSchedulePreview()}

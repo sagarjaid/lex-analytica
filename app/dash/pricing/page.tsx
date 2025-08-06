@@ -31,7 +31,7 @@ export default function Pricing() {
       <Suspense fallback={<div>Loading...</div>}>
         <Header user={null} router={null} />
       </Suspense>
-    <main className="flex flex-col items-center pt-6 px-6 pb-24">
+    <main className="flex flex-col items-center pt-6 px-6 pb-24 w-full">
       <div className="w-full max-w-2xl md:max-w-4xl">
         <div className="flex justify-between items-center mb-2">
           <h1 className="text-xl  font-extrabold">Pricing</h1>

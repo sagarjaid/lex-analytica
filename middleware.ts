@@ -55,7 +55,7 @@ export async function middleware(req: NextRequest) {
     (req.nextUrl.pathname === '/' || req.nextUrl.pathname === '/login' || req.nextUrl.pathname === '/signin')
   ) {
     const redirectUrl = req.nextUrl.clone();
-    redirectUrl.pathname = '/dash/goals';
+    redirectUrl.pathname = '/dash';
     return NextResponse.redirect(redirectUrl);
   }
 

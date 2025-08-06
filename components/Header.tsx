@@ -65,7 +65,7 @@ const Header = ({ handleSignOut, user, router }: { handleSignOut?: () => void, u
   // Use Tailwind's hidden class for lg+ if on dash route
   return (
     <header
-      className={`sticky top-0 w-full z-40 bg-background ${isDashRoute ? 'lg:hidden' : ''}`}
+      className={`w-full z-40 bg-background border-b border-gray-200 ${isDashRoute ? 'lg:hidden' : ''}`}
     >
       <nav
         className='w-full max-w-7xl mx-auto flex items-center justify-between px-4 py-2 pt-4'
