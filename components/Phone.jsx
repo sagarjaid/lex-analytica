@@ -9,6 +9,8 @@ import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/bootstrap.css';
 import './phone-input-custom.css';
 import { Sparkle } from 'lucide-react';
+import usedby from "@/public/usedby.png";
+
 
 const Phone = ({ className = '', ...props }) => {
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -241,8 +243,8 @@ const Phone = ({ className = '', ...props }) => {
 
         <a href='/'>
                 <img
-                  src="https://nevermissai.com/usedby.png"
-                  className='w-[190px]'
+                  src={usedby.src}
+                  className='w-[180px] grayscale'
                 />
               </a>
               <p className='text-center text-xs'>
