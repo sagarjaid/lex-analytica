@@ -119,6 +119,8 @@ const Phone = ({ className = '', ...props }) => {
           Try Gym Reminder <br/>AI for FREE!
         </h2>
 
+        <p className='text-center text-3xl animate-bounce text-gray-500'>📞</p>
+
         <div className='flex flex-col gap-2 w-full p-2'>
         
         {/* Phone Input */}
@@ -204,7 +206,7 @@ const Phone = ({ className = '', ...props }) => {
               disabled={loading || !phoneNumber}
               className="w-full bg-black text-white hover:bg-gray-800 py-6 rounded-lg font-medium disabled:opacity-80"
             >
-              {loading ? 'Sending...' : 'Call Me Now'}
+              {loading ? 'Sending...' : 'Remind by Call'}
             </Button>
           ) : (
             <div className="flex gap-2">

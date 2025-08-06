@@ -46,7 +46,7 @@ export default function Home() {
               Never miss your life Goals
             </h2>
             <p className="max-w-xl mx-auto font-bold text-gray-900 text-xl opacity-90 leading-relaxed mb-12">
-              Your Life Goals, Tasks or Habits Reminded by AI calls
+              Your Life Goals, Tasks or Habits Reminded by AI calls 
             </p>
           </div>
 
