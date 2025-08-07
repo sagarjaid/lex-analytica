@@ -1,6 +1,6 @@
 /** @format */
 
-import { createClient } from '@/lib/supabase/server';
+import { createServiceClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
 import axios from 'axios';
 
@@ -78,7 +78,7 @@ export async function POST(req: Request) {
     }
 
     // Initialize Supabase client
-    const supabase = createClient();
+    const supabase = createServiceClient();
 
     // Get the goal details with proper headers
     console.log('Searching for goal with ID:', goal_id.trim());
@@ -235,7 +235,7 @@ export async function POST(req: Request) {
     
     // Log the error
     try {
-      const supabase = createClient();
+      const supabase = createServiceClient();
       const { goal_id } = body || {};
       
       if (goal_id) {

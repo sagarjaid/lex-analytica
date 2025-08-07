@@ -1,6 +1,6 @@
 /** @format */
 
-import { createClient } from '@/lib/supabase/server';
+import { createServiceClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
 
 export async function POST(req: Request) {
@@ -25,7 +25,7 @@ export async function POST(req: Request) {
     }
 
     // Initialize Supabase client
-    const supabase = createClient();
+    const supabase = createServiceClient();
 
     // Update the call log with the status
     const { error: updateError } = await supabase
