@@ -1,4 +1,5 @@
 import { getSEOTags } from "@/lib/seo";
+import React from "react";
 import config from "@/config";
 
 export const metadata = getSEOTags({
