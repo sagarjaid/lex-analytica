@@ -916,7 +916,7 @@ export default function Dashboard() {
             onDisable: true,
           },
           extendedData: {
-            headers: [] as string[],
+            headers: ['Content-Type: application/json'] as string[],
             body: JSON.stringify(postData),
           },
           type: 0,
