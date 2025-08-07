@@ -201,7 +201,6 @@ export async function POST(req: Request) {
         wait_for_greeting: "false",
         temperature: "0.7",
         interruption_threshold: 100,
-        timezone: "America/Los_Angeles",
         max_duration: 5,
         noise_cancellation: "false",
         block_interruptions: "false",
@@ -216,7 +215,7 @@ export async function POST(req: Request) {
       },
       {
         headers: {
-          authorization: `Bearer ${process.env.NEXT_PUBLIC_BLAND_AUTH}`,
+          authorization: `${process.env.NEXT_PUBLIC_BLAND_AUTH}`,
           'Content-Type': 'application/json',
         },
         timeout: 30000, // 30 second timeout
