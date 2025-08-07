@@ -100,7 +100,7 @@ export default function LoginPage() {
       if (error) throw error;
 
       // Redirect to the original destination or dashboard
-      const redirectTo = searchParams.get('redirectedFrom') || '/dash/goals';
+      const redirectTo = searchParams.get('redirectedFrom') || '/dash';
       router.push(redirectTo);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to verify OTP');

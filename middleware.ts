@@ -49,7 +49,7 @@ export async function middleware(req: NextRequest) {
   // }
 
   // If user is logged in and the current path is /login or /signin,
-  // redirect the user to /dash/goals
+  // redirect the user to /dash
   if (
     user &&
     (req.nextUrl.pathname === '/' || req.nextUrl.pathname === '/login' || req.nextUrl.pathname === '/signin')
