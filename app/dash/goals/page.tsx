@@ -43,6 +43,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { GoalStatus, CallStatus } from "@/types/database";
 
 interface Goal {
   id: string;
@@ -51,7 +52,7 @@ interface Goal {
   is_active: boolean;
   created_at: string;
   cron_job_id: string | null;
-  status: string;
+  status: GoalStatus;
   execution_count: number;
   last_executed_at: string | null;
   next_execution_at: string | null;
@@ -74,7 +75,7 @@ interface Goal {
 interface CallLog {
   id: string;
   call_id: string;
-  status: string;
+  status: CallStatus;
   created_at: string;
   goal_title: string;
   phone_number: string;
@@ -304,7 +305,7 @@ export default function GoalsPage() {
     return `Job will run at ${formatSchedule(schedule)}`;
   };
 
-  const getStatusBadge = (status: string) => {
+  const getStatusBadge = (status: GoalStatus) => {
     switch (status) {
       case 'created':
         return <Badge variant="secondary">Created</Badge>;
@@ -323,7 +324,7 @@ export default function GoalsPage() {
     }
   };
 
-  const getCallStatusBadge = (status: string) => {
+  const getCallStatusBadge = (status: CallStatus) => {
     switch (status) {
       case 'initiated':
         return <Badge variant="secondary">Initiated</Badge>;
@@ -451,10 +452,12 @@ export default function GoalsPage() {
                     <div className="p-6">
                       {/* Header Row */}
                       <div className="flex items-start justify-between mb-4">
-                                                  <div className="flex-1">
-                                                          <h3 className="text-lg font-semibold text-gray-900">{goal.title}</h3>
-
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2">
+                            <h3 className="text-lg font-semibold text-gray-900">{goal.title}</h3>
+                            {getStatusBadge(goal.status)}
                           </div>
+                        </div>
                         
                         {/* Action Buttons */}
                         <div className="flex items-center gap-2">
@@ -512,7 +515,7 @@ export default function GoalsPage() {
                       {/* Expanded Content */}
                       {expandedGoals.has(goal.id) && (
                         <div className="mt-6 pt-6 border-t border-gray-100 text-sm">
-                          <div className="grid grid-cols-2 gap-8">
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                             <div>
                               <h4 className="font-semibold text-gray-900 mb-3">AI Configuration</h4>
                               <div className="space-y-2">
@@ -573,6 +576,41 @@ export default function GoalsPage() {
                                   </div>
                                 )}
                               </div>
+                            </div>
+
+                            <div>
+                              <h4 className="font-semibold text-gray-900 mb-3">Call History</h4>
+                              {callLogs[goal.id] && callLogs[goal.id].length > 0 ? (
+                                <div className="space-y-2">
+                                  {callLogs[goal.id].slice(0, 3).map((log) => (
+                                    <div key={log.id} className="border-l-2 border-gray-200 pl-3">
+                                      <div className="flex items-center gap-2 mb-1">
+                                        {getCallStatusBadge(log.status)}
+                                        <span className="text-gray-600 text-xs">
+                                          {new Date(log.created_at).toLocaleDateString()}
+                                        </span>
+                                      </div>
+                                      {log.duration_seconds && (
+                                        <p className="text-gray-600 text-xs">
+                                          Duration: {Math.round(log.duration_seconds)}s
+                                        </p>
+                                      )}
+                                      {log.error_message && (
+                                        <p className="text-red-600 text-xs">
+                                          Error: {log.error_message}
+                                        </p>
+                                      )}
+                                    </div>
+                                  ))}
+                                  {callLogs[goal.id].length > 3 && (
+                                    <p className="text-gray-500 text-xs">
+                                      +{callLogs[goal.id].length - 3} more calls
+                                    </p>
+                                  )}
+                                </div>
+                              ) : (
+                                <p className="text-gray-500 text-xs">No call history yet</p>
+                              )}
                             </div>
                           </div>
                         </div>

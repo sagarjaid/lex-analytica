@@ -11,9 +11,19 @@ export async function POST(req: Request) {
     const { 
       call_id, 
       status, 
-      duration_seconds, 
+      call_length,
       error_message,
-      goal_id 
+      completed,
+      end_at,
+      started_at,
+      corrected_duration,
+      transcript,
+      concatenated_transcript,
+      disposition_tag,
+      answered_by,
+      call_ended_by,
+      price,
+      summary
     } = body;
 
     if (!call_id) {
@@ -27,13 +37,23 @@ export async function POST(req: Request) {
     // Initialize Supabase client
     const supabase = createServiceClient();
 
-    // Update the call log with the status
+    // Update the call log with comprehensive call data
     const { error: updateError } = await supabase
       .from('call_logs')
       .update({
         status: status,
-        duration_seconds: duration_seconds,
+        duration_seconds: call_length,
         error_message: error_message,
+        completed: completed,
+        started_at: started_at,
+        end_at: end_at,
+        corrected_duration: corrected_duration,
+        transcript: transcript,
+        disposition_tag: disposition_tag,
+        answered_by: answered_by,
+        call_ended_by: call_ended_by,
+        call_cost: price,
+        call_summary: summary,
         updated_at: new Date().toISOString(),
       })
       .eq('call_id', call_id);
@@ -46,36 +66,33 @@ export async function POST(req: Request) {
       );
     }
 
-    // If the call was successful, update the goal status
-    if (status === 'completed' && goal_id) {
-      console.log('Updating goal status to active for goal_id:', goal_id);
-      const { error: goalUpdateError } = await supabase
-        .from('goals')
-        .update({
-          status: 'active',
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', goal_id);
-      
-      if (goalUpdateError) {
-        console.error('Error updating goal status to active:', goalUpdateError);
-      }
+    // Also update the goal's call status and duration
+    const { error: goalUpdateError } = await supabase
+      .from('goals')
+      .update({
+        last_call_status: status,
+        last_call_duration: call_length,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('call_id', call_id);
+
+    if (goalUpdateError) {
+      console.error('Error updating goal call status:', goalUpdateError);
+      // Don't fail the webhook if goal update fails, just log it
     }
 
-    // If the call failed, update the goal status
-    if (['failed', 'no_answer', 'busy'].includes(status) && goal_id) {
-      console.log('Updating goal status to failed for goal_id:', goal_id);
-      const { error: goalUpdateError } = await supabase
-        .from('goals')
-        .update({
-          status: 'failed',
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', goal_id);
-      
-      if (goalUpdateError) {
-        console.error('Error updating goal status to failed:', goalUpdateError);
-      }
+    // Log additional call details if available
+    if (completed !== undefined || end_at || started_at || corrected_duration) {
+      console.log('Call completed with details:', {
+        completed,
+        end_at,
+        started_at,
+        corrected_duration,
+        disposition_tag,
+        answered_by,
+        call_ended_by,
+        price
+      });
     }
 
     return NextResponse.json({

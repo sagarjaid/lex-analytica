@@ -149,3 +149,23 @@ export function getTimeUntilExpiration(expiresAt: string): string {
   if (hours > 0) return `${hours}h ${minutes}m`;
   return `${minutes}m`;
 } 
+
+/**
+ * Maps Bland AI status values to our internal status categories
+ * Bland AI can send various status values, so we categorize them
+ */
+export function mapBlandAIStatus(blandStatus: string): 'success' | 'failure' | 'in_progress' | 'unknown' {
+  const successStatuses = ['completed', 'successful', 'answered', 'human'];
+  const failureStatuses = ['failed', 'no_answer', 'busy', 'cancelled', 'timeout', 'voicemail', 'machine'];
+  const inProgressStatuses = ['initiated', 'in_progress', 'ringing'];
+  
+  if (successStatuses.includes(blandStatus.toLowerCase())) {
+    return 'success';
+  } else if (failureStatuses.includes(blandStatus.toLowerCase())) {
+    return 'failure';
+  } else if (inProgressStatuses.includes(blandStatus.toLowerCase())) {
+    return 'in_progress';
+  } else {
+    return 'unknown';
+  }
+} 

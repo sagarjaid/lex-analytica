@@ -3,6 +3,7 @@
 import { createServiceClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
 import axios from 'axios';
+import { GoalStatus, CallStatus } from '@/types/database';
 
 export async function GET() {
   // Set cache control headers to prevent caching
@@ -119,11 +120,12 @@ export async function POST(req: Request) {
         await supabase.from('call_logs').insert({
           goal_id: goal_id.trim(),
           user_id: null, // We don't have user_id at this point
-          call_id: `error-${Date.now()}`,
-          status: 'failed',
+          // call_id: `error-${Date.now()}`,
+          status: 'failed' as CallStatus,
           goal_title: 'Unknown',
           phone_number: 'Unknown',
           error_message: `Goal not found: ${goalError.message}`,
+          completed: false,
           created_at: new Date().toISOString(),
         });
       } catch (logError) {
@@ -145,11 +147,12 @@ export async function POST(req: Request) {
       await supabase.from('call_logs').insert({
         goal_id: goal.id,
         user_id: goal.user_id,
-        call_id: `inactive-${Date.now()}`,
-        status: 'cancelled',
+        // call_id: `inactive-${Date.now()}`,
+        status: 'cancelled' as CallStatus,
         goal_title: goal.title,
         phone_number: goal.phone_number,
         error_message: 'Goal is inactive',
+        completed: false,
         created_at: new Date().toISOString(),
       });
 
@@ -159,17 +162,15 @@ export async function POST(req: Request) {
       );
     }
 
-    // Update goal execution count and last executed time
+    // Update goal execution count, last executed time, and set status to active
     await supabase
       .from('goals')
       .update({
         execution_count: (goal.execution_count || 0) + 1,
         last_executed_at: new Date().toISOString(),
+        status: 'active' as GoalStatus,
       })
       .eq('id', goal.id);
-
-    // Determine voice ID based on selection
-    const voiceId = voice === 'Female' ? 'female-1' : 'male-1';
 
     // Create the task description
     const taskDescription = `${goal.persona || 'AI Assistant'}: ${goal.context || task}`;
@@ -177,12 +178,13 @@ export async function POST(req: Request) {
     console.log('Making Bland AI call with:', {
       phone_number: goal.phone_number,
       task: taskDescription,
-      voice_id: voiceId,
-      language: language || 'English'
+      voice: voice === 'Male' ? 'Josh' : 'June',
+      model: 'nova-2',
+      language: language === 'English' ? 'en' : 'en'
     });
 
     // Validate Bland AI credentials
-    if (!process.env.NEXT_PUBLIC_BLOND_AUTH) {
+    if (!process.env.NEXT_PUBLIC_BLAND_AUTH) {
       console.error('Missing BLAND_AUTH environment variable');
       return NextResponse.json(
         { error: 'Bland AI configuration error' },
@@ -194,17 +196,27 @@ export async function POST(req: Request) {
     const response = await axios.post(
       'https://api.bland.ai/v1/calls',
       {
+        model: "base",
+        language: "en-US",
+        wait_for_greeting: "false",
+        temperature: "0.7",
+        interruption_threshold: 100,
+        timezone: "America/Los_Angeles",
+        max_duration: 5,
+        noise_cancellation: "false",
+        block_interruptions: "false",
+        record: false,
+        keywords: [],
+        ignore_button_press: true,
         phone_number: goal.phone_number,
+        voice: voice === 'Male' ? 'Josh' : 'June',
         task: taskDescription,
-        voice_id: voiceId,
-        language: language || 'English',
-        webhook_url: "https://nevermissai.com/api/call-status",
-        reduce_latency: true,
-        model: 'nova-2',
+        webhook: "https://nevermissai.com/api/call-status",
+        webhook_events: []
       },
       {
         headers: {
-          Authorization: `Bearer ${process.env.NEXT_PUBLIC_BLOND_AUTH}`,
+          authorization: `Bearer ${process.env.NEXT_PUBLIC_BLAND_AUTH}`,
           'Content-Type': 'application/json',
         },
         timeout: 30000, // 30 second timeout
@@ -213,15 +225,30 @@ export async function POST(req: Request) {
 
     console.log('Bland AI response:', response.data);
 
+    // Update goal with Bland.ai call details
+    await supabase
+      .from('goals')
+      .update({
+        call_id: response.data.call_id,
+        batch_id: response.data.batch_id || null,
+        bland_voice: voice === 'Male' ? 'Josh' : 'June',
+        bland_language: 'en-US',
+        last_call_status: 'initiated' as CallStatus,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', goal.id);
+
     // Log the call attempt
     await supabase.from('call_logs').insert({
       goal_id: goal.id,
       user_id: goal.user_id,
       call_id: response.data.call_id,
-      status: 'initiated',
+      status: 'initiated' as CallStatus,
       goal_title: goal.title,
       phone_number: goal.phone_number,
       execution_time: new Date().toISOString(),
+      completed: false,
+      started_at: new Date().toISOString(),
       created_at: new Date().toISOString(),
     });
 
@@ -233,7 +260,7 @@ export async function POST(req: Request) {
   } catch (error) {
     console.error('Error making call:', error);
     
-    // Log the error
+    // Log the error and update goal status
     try {
       const supabase = createServiceClient();
       const { goal_id } = body || {};
@@ -246,16 +273,28 @@ export async function POST(req: Request) {
           .single();
 
         if (goal) {
+          // Log the call failure
           await supabase.from('call_logs').insert({
             goal_id: goal_id,
             user_id: goal.user_id,
-            call_id: `error-${Date.now()}`,
-            status: 'failed',
+            // call_id: `error-${Date.now()}`,
+            status: 'failed' as CallStatus,
             goal_title: goal.title,
             phone_number: goal.phone_number,
             error_message: error instanceof Error ? error.message : 'Unknown error',
+            completed: false,
             created_at: new Date().toISOString(),
           });
+
+          // Update goal status to failed
+          await supabase
+            .from('goals')
+            .update({
+              status: 'failed' as GoalStatus,
+              last_call_status: 'failed' as CallStatus,
+              updated_at: new Date().toISOString(),
+            })
+            .eq('id', goal_id);
         }
       }
     } catch (logError) {
