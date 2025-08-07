@@ -39,7 +39,7 @@ export interface Goal {
   bland_voice?: string;
   bland_language?: string;
   last_call_status?: CallStatus;
-  last_call_duration?: number;
+  last_call_duration?: number; // DECIMAL(10,2) in database
   created_at: string;
   updated_at: string;
 }
@@ -57,7 +57,7 @@ export interface CallLog {
   goal_title?: string;
   phone_number?: string;
   execution_time?: string;
-  duration_seconds?: number;
+  duration_minutes?: number; // DECIMAL(10,2) in database
   error_message?: string;
   completed?: boolean;
   started_at?: string;

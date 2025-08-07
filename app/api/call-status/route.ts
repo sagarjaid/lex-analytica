@@ -36,12 +36,20 @@ export async function POST(req: Request) {
     // Initialize Supabase client
     const supabase = createServiceClient();
 
+    // Store call_length directly as minutes (Bland.ai format)
+    const durationMinutes = call_length ? parseFloat(call_length) : 0;
+    
+    // Log the duration for debugging
+    if (call_length !== undefined) {
+      console.log(`Storing call_length as ${durationMinutes} minutes`);
+    }
+
     // Update the call log with comprehensive call data
     const { error: updateError } = await supabase
       .from('call_logs')
       .update({
         status: status,
-        duration_seconds: call_length,
+        duration_minutes: durationMinutes,
         error_message: error_message,
         completed: completed,
         started_at: started_at,
@@ -70,7 +78,7 @@ export async function POST(req: Request) {
       .from('goals')
       .update({
         last_call_status: status,
-        last_call_duration: call_length,
+        last_call_duration: durationMinutes,
         updated_at: new Date().toISOString(),
       })
       .eq('call_id', call_id);

@@ -80,7 +80,7 @@ interface CallLog {
   goal_title: string;
   phone_number: string;
   execution_time: string | null;
-  duration_seconds: number | null;
+  duration_minutes: number | null;
   error_message: string | null;
 }
 
@@ -600,9 +600,9 @@ export default function GoalsPage() {
                                         {new Date(log.created_at).toLocaleDateString()}
                                       </span>
                                     </div>
-                                    {log.duration_seconds && (
+                                    {log.duration_minutes && (
                                       <p className="text-gray-600 text-xs">
-                                        Duration: {Math.round(log.duration_seconds)}s
+                                        Duration: {Math.round(log.duration_minutes * 60)}s
                                       </p>
                                     )}
                                     {log.error_message && (
