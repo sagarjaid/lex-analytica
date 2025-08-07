@@ -7,6 +7,7 @@ import { User } from "@supabase/supabase-js";
 
 import { createClient } from "@/lib/supabase/client";
 import { useState } from "react";
+import { v4 as uuidv4 } from "uuid";
 
 import { Switch } from "@/components/ui/switch";
 
@@ -817,8 +818,15 @@ export default function Dashboard() {
     }
 
     try {
+      // Generate goal ID on frontend first
+      const goalId = uuidv4();
+      
+      console.log("Generated goal ID:", goalId);
+      console.log("Goal ID type:", typeof goalId);
+      
       let finalSchedule: JobSchedule;
       let expiresAt: Date | null = null;
+      let nextExecutionAt: Date | null = null;
 
       if (jobType === "onetime") {
         const [hour, minute] = oneTimeTime.split(":").map(Number);
@@ -844,6 +852,9 @@ export default function Dashboard() {
           wdays: [-1],
           expiresAt: formatDateTimeToNumber(expirationDateStr, expirationTimeStr), // Set to 6 hours after execution for cron-job.org
         };
+        
+        // Set next_execution_at for one-time goals
+        nextExecutionAt = executionDate;
       } else {
         finalSchedule =
           recurringType === "simple"
@@ -860,36 +871,9 @@ export default function Dashboard() {
         }
       }
 
-      // First, create the goal in the database
-      const { data: goal, error: goalError } = await supabase
-        .from("goals")
-        .insert({
-          user_id: user.id,
-          title: goalName,
-          description: `${persona}: ${context}`,
-          phone_number: `+${phoneNumber}`,
-          schedule: finalSchedule,
-          schedule_type: jobType,
-          is_active: isActive,
-          status: isActive ? 'active' : 'paused',
-          persona: persona,
-          context: context,
-          language: language,
-          voice: aiVoice,
-          expires_at: expiresAt,
-        })
-        .select()
-        .single();
-
-      if (goalError) {
-        console.error("Error creating goal:", goalError);
-        alert("Error creating goal in database. Please try again.");
-        return;
-      }
-
-      // Create the cron job
+      // Create the cron job first with the generated goal ID
       const postData = {
-        goal_id: goal.id,
+        goal_id: goalId,
         phoneNumber: `+${phoneNumber}`,
         task: `${persona}. ${context}`,
         language: language,
@@ -935,16 +919,59 @@ export default function Dashboard() {
         },
       });
 
-      if (response.data && response.data.jobId) {
-        // Update the goal with the cron job ID
-        const { error: updateError } = await supabase
-          .from("goals")
-          .update({ cron_job_id: response.data.jobId.toString() })
-          .eq("id", goal.id);
+      if (!response.data || !response.data.jobId) {
+        throw new Error("Failed to create cron job");
+      }
 
-        if (updateError) {
-          console.error("Error updating goal with cron job ID:", updateError);
+      const cronJobId = response.data.jobId.toString();
+      
+      if (!cronJobId || cronJobId.trim() === '') {
+        throw new Error("Invalid cron job ID received");
+      }
+      
+      console.log("Cron job created successfully with ID:", cronJobId);
+      console.log("Goal ID to be used:", goalId);
+
+      // Now create the goal in the database with both IDs
+      const goalData: any = {
+        id: goalId, // Use the pre-generated ID
+        user_id: user.id,
+        title: goalName,
+        description: `${persona}: ${context}`,
+        phone_number: `+${phoneNumber}`,
+        schedule: finalSchedule,
+        schedule_type: jobType,
+        is_active: isActive,
+        status: isActive ? 'created' : 'paused',
+        persona: persona,
+        context: context,
+        language: language,
+        voice: aiVoice,
+        expires_at: expiresAt,
+        cron_job_id: cronJobId, // Set the cron job ID directly
+        next_execution_at: jobType === "onetime" ? nextExecutionAt : undefined,
+      };
+      
+      // Remove any undefined or null values that might cause issues
+      Object.keys(goalData).forEach(key => {
+        if (goalData[key] === undefined || goalData[key] === null) {
+          delete goalData[key];
         }
+      });
+      
+      console.log("Goal data to be inserted:", goalData);
+
+      const { data: goal, error: goalError } = await supabase
+        .from("goals")
+        .insert(goalData)
+        .select()
+        .single();
+
+      if (goalError) {
+        console.error("Error creating goal:", goalError);
+        console.error("Goal data that failed:", goalData);
+        alert("Error creating goal in database. Please try again.");
+        return;
       }
 
       console.log("Goal and job created successfully:", response.data);
@@ -954,7 +981,7 @@ export default function Dashboard() {
       window.location.href = "/dash/goals";
     } catch (error) {
       console.error("Error creating goal:", error);
-      alert("Error creating goal. Please try again.");
+      alert("Something went wrong, please try again after some time.");
     }
   };
 

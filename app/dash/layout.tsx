@@ -228,7 +228,7 @@ export default function DashboardLayout({
               className="block text-xs text-gray-500 hover:text-gray-700"
               showIcon={false}
             />
-            <Link  href="https://www.linkedin.com/in/sagarjaid/" className="mt-4">Build by Sagar Jaid</Link>
+            <Link  href="https://www.linkedin.com/in/sagarjaid/" target="_blank" rel="noopener noreferrer" className="mt-4">Build by Sagar Jaid</Link>
           </div>
         </aside>
 

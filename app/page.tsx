@@ -56,12 +56,13 @@ export default function Home() {
         </div>
 
         <section>
-          <div className="max-w-7xl mx-auto px-8 md:pt-20 text-center">
+          <div className="max-w-7xl mx-auto px-8 pt-10 md:pt-20 text-center">
+
             <h2 className="max-w-3xl mx-auto font-extrabold text-4xl md:text-5xl tracking-tight mb-4 leading-10">
               Never miss your life Goals
             </h2>
-            <p className="max-w-xl mx-auto font-bold text-gray-900 text-xl opacity-90 leading-relaxed mb-12">
-              Your Life Goals, Tasks or Habits Reminded by AI calls 
+            <p className="max-w-xl mx-auto font-bold text-gray-900 text-lg opacity-90 leading-relaxed mb-6 md:mb-12">
+              Your Life Goals, Tasks or Habits Reminded by <span className="text-green-700">AI calls daily!</span> 
             </p>
           </div>
 

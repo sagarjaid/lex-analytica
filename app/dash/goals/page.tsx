@@ -7,13 +7,12 @@ import {
   LayoutDashboard,
   Tags,
   Plus,
-  RefreshCw,
 } from "lucide-react";
 import ThemeToggle from "@/components/ThemeToggle";
 
 /** @format */
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import {
@@ -91,9 +90,25 @@ export default function GoalsPage() {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const supabase = createClient();
+  const hasRunCronCheck = useRef(false);
 
   useEffect(() => {
     fetchGoals();
+  }, []);
+
+  // Separate useEffect to run cron job check after goals are loaded
+  useEffect(() => {
+    if (goals.length > 0 && !loading && !hasRunCronCheck.current) {
+      hasRunCronCheck.current = true;
+      checkCronJobs();
+    }
+  }, [goals, loading]);
+
+  // Cleanup effect to reset the ref when component unmounts
+  useEffect(() => {
+    return () => {
+      hasRunCronCheck.current = false;
+    };
   }, []);
 
   const fetchGoals = async () => {
@@ -129,6 +144,32 @@ export default function GoalsPage() {
       console.error("Error:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const checkCronJobs = async () => {
+    try {
+      const response = await fetch('/api/check-cron-jobs', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        console.error('Failed to check cron jobs:', response.status);
+        return;
+      }
+
+      const result = await response.json();
+      console.log('Cron job check result:', result);
+
+      // Refresh goals if there were updates
+      if (result.updatedGoals && result.updatedGoals.length > 0) {
+        await fetchGoals();
+      }
+    } catch (error) {
+      console.error('Error checking cron jobs:', error);
     }
   };
 
@@ -195,6 +236,11 @@ export default function GoalsPage() {
 
       console.log("Successfully updated both cron job and database");
       await fetchGoals();
+      
+      // Check cron jobs to update next_execution_at for the toggled goal
+      if (newStatus) {
+        await checkCronJobs();
+      }
     } catch (error) {
       console.error("Error in toggleGoalStatus:", error);
       alert(`Error: ${error}`);
@@ -384,17 +430,18 @@ export default function GoalsPage() {
     }
   };
 
+
+
+
+
   if (loading) {
     return (
       <>
-        <Suspense fallback={<div>Loading...</div>}>
-          <Header user={null} router={null} />
-        </Suspense>
         <main className="flex flex-col items-center pt-6 px-6 pb-24 w-full">
           <div className="w-full max-w-2xl md:max-w-4xl">
             <div className="flex justify-center items-center h-64">
               <div className="text-center">
-                <RefreshCw className="h-8 w-8 animate-spin mx-auto mb-4" />
+                <div className="h-8 w-8 animate-spin mx-auto mb-4 border-2 border-gray-300 border-t-gray-600 rounded-full"></div>
                 <p>Loading goals...</p>
               </div>
             </div>
@@ -413,9 +460,15 @@ export default function GoalsPage() {
         <div className="w-full max-w-2xl md:max-w-4xl">
           <div className="flex justify-between items-center mb-2">
             <h1 className="text-xl font-extrabold">Goals</h1>
-            <span className="lg:block hidden">
-              <ThemeToggle />
-            </span>
+            <div className="flex items-center gap-2">
+              <Link
+                href="/dash/add"
+                className="border rounded-md p-2 flex items-center gap-2 hover:bg-gray-100 transition-all duration-200 justify-center"
+                >
+                <Plus className="h-4 w-4 text-gray-700" /> 
+                <span className="text-xs">Add New Goal</span>
+              </Link>
+            </div>
           </div>
 
           <p className="mb-6 md:mb-8 text-gray-700 text-sm">
@@ -424,25 +477,7 @@ export default function GoalsPage() {
 
           <div className="space-y-4">
             {/* Add New Goal Card - Only show when there are existing goals */}
-            {goals.length > 0 && (
-              <Link
-                href="/dash/add"
-                className="flex-1 border border-gray-200 rounded-xl shadow p-4 flex items-start gap-3 md:gap-4 hover:shadow-lg transition"
-              >
-                <div className="bg-gray-100 mt-1 rounded-full  ">
-                    <Plus className="w-6 h-6 text-gray-700" />
-                  </div>
-                <div className="flex flex-col gap-1">
-                  
-                
-                  <h2 className="text-lg font-semibold text-gray-900">Add New Goal</h2>
-                    <p className="text-gray-600 text-xs">
-                   Create a Goal, AI will call on your mobile number to remind your
-                   goal
-                 </p>
-                 </div>
-              </Link>
-            )}
+         
 
             {/* Goals List */}
             {goals.length > 0 && (
@@ -489,17 +524,18 @@ export default function GoalsPage() {
 
                       {/* Info Row */}
                       <div className="grid grid-cols-2 gap-4 text-sm text-gray-600">
-                                                  <div className="space-y-1">
-                            <div className="font-medium text-xs text-gray-900">{getExecutionPreview(goal)}</div>
-                            <div className="text-xs text-gray-600 flex items-center gap-1">
-                              {goal.schedule_type === 'onetime' ? (
-                                <CalendarDays className="h-3 w-3 text-blue-500" />
-                              ) : (
-                                <Repeat className="h-3 w-3 text-green-500" />
-                              )}
-                              {goal.execution_count || 0} executions
-                            </div>
+                        <div className="space-y-1">
+                          <div className="font-medium text-xs text-gray-900">{getExecutionPreview(goal)}</div>
+                          <div className="text-xs text-gray-600 flex items-center gap-1">
+                            {goal.schedule_type === 'onetime' ? (
+                              <CalendarDays className="h-3 w-3 text-blue-500" />
+                            ) : (
+                              <Repeat className="h-3 w-3 text-green-500" />
+                            )}
+                            {goal.execution_count || 0} executions
                           </div>
+
+                        </div>
                         
                         <div className="flex items-center justify-end gap-2">
                           <Switch
@@ -553,14 +589,15 @@ export default function GoalsPage() {
                                     </p>
                                   </div>
                                 )}
-                                {goal.next_execution_at && (
-                                  <div>
-                                    <span className="text-gray-900 text-sm">Next Execution</span>
-                                    <p className="text-gray-600 text-xs">
-                                      {new Date(goal.next_execution_at).toLocaleString()}
-                                    </p>
-                                  </div>
-                                )}
+                                <div>
+                                  <span className="text-gray-900 text-sm">Next Execution</span>
+                                  <p className="text-gray-600 text-xs">
+                                    {goal.next_execution_at 
+                                      ? new Date(goal.next_execution_at).toLocaleString()
+                                      : 'No next execution date set'
+                                    }
+                                  </p>
+                                </div>
                                 <div>
                                   <span className="text-gray-900 text-sm">Created</span>
                                   <p className="text-gray-600 text-xs">
@@ -597,7 +634,7 @@ export default function GoalsPage() {
                                     <div className="flex items-center gap-2 mb-1">
                                       {getCallStatusBadge(log.status)}
                                       <span className="text-gray-600 text-xs">
-                                        {new Date(log.created_at).toLocaleDateString()}
+                                        {new Date(log.created_at).toLocaleString()}
                                       </span>
                                     </div>
                                     {log.duration_minutes && (

@@ -241,13 +241,13 @@ function LoginPageContent() {
                   <div className='flex gap-2'>
                     <Button
                       variant='outline'
-                      className='flex-1 h-10'
+                      className='flex-1 py-5'
                       onClick={() => setShowOtpInput(false)}
                       disabled={loading}>
                       Back
                     </Button>
                     <Button
-                      className='flex-1 h-10'
+                      className='flex-1 py-5'
                       onClick={handleVerifyOtp}
                       disabled={loading || !otp}>
                       {loading ? 'Verifying...' : 'Verify OTP'}
