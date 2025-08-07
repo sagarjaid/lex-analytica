@@ -1,3 +1,6 @@
+import ClickableEmail from './ClickableEmail';
+import config from '@/config';
+
 const Arrow = ({ extraStyle }: { extraStyle: string }) => {
   return (
     <svg
@@ -87,15 +90,19 @@ const Problem = () => {
         </p>
 
 
-        <div className='text-sm opacity-90 text-gray-500 text-xs leading-relaxed flex flex-wrap gap-2 justify-center'>
-          <a href="/terms" className="hover:underline">Terms of Service</a>
+        <div className='text-sm opacity-90 text-gray-500 text-xs leading-relaxed flex flex-wrap gap-2 justify-center items-center'>
+          <a href="/tos" className="hover:underline">Terms of Service</a>
           <span>|</span>
-          <a href="/privacy" className="hover:underline">Privacy Policy</a>
+          <a href="/privacy-policy" className="hover:underline">Privacy Policy</a>
           <span>|</span>
-          <a href="/support" className="hover:underline">Support</a>
+          <ClickableEmail 
+            email={config.resend.supportEmail} 
+            className="text-xs text-gray-500 hover:text-gray-700"
+            showIcon={false}
+          />
           <span>|</span>
           <span>
-            Build by <a href="https://twitter.com/sagarjaid" target="_blank" rel="noopener noreferrer" className="hover:underline">Sagar Jaid</a>
+             <a href="https://www.linkedin.com/in/sagarjaid/" target="_blank" rel="noopener noreferrer" className="hover:underline"> Build by Sagar Jaid</a>
           </span>
         </div>
 

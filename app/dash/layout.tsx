@@ -43,6 +43,8 @@ import {
 import Header from "@/components/Header";
 import Logo from "@/components/Logo";
 import { useTheme } from "next-themes";
+import ClickableEmail from "@/components/ClickableEmail";
+import config from "@/config";
 
 // This is a server-side component to ensure the user is logged in.
 // If not, it will redirect to the login page.
@@ -210,21 +212,23 @@ export default function DashboardLayout({
        
           </nav>
 
-          <div className="space-y-1 text-xs text-gray-500 mt-6 md:mt-0">
+          <div className="space-y-1 text-xs flex flex-col gap-1.5 text-gray-500 mt-6 md:mt-0">
             <div className="font-bold tracking-widest mb-2">LEGAL</div>
-            <Link href="/tos/page.tsx" className="block hover:underline">
+            <Link href="/tos" className="block hover:underline">
               Terms of services
             </Link>
             <Link
-              href="/privacy-policy/page.tsx"
+              href="/privacy-policy"
               className="block hover:underline"
             >
               Privacy policy
             </Link>
-            <Link href="/support" className="block hover:underline">
-              Support
-            </Link>
-            <div className="mt-2">Build by Sagar Jaid</div>
+            <ClickableEmail 
+              email={config.resend.supportEmail} 
+              className="block text-xs text-gray-500 hover:text-gray-700"
+              showIcon={false}
+            />
+            <Link  href="https://www.linkedin.com/in/sagarjaid/" className="mt-4">Build by Sagar Jaid</Link>
           </div>
         </aside>
 

@@ -43,17 +43,17 @@ const TOS = () => {
         >
           {`Last Updated: September 26, 2023
 
-Welcome to ShipFast!
+Welcome to NeverMissAI!
 
-These Terms of Service ("Terms") govern your use of the ShipFast website at https://nevermissai.com ("Website") and the services provided by ShipFast. By using our Website and services, you agree to these Terms.
+These Terms of Service ("Terms") govern your use of the NeverMissAI website at https://nevermissai.com ("Website") and the services provided by NeverMissAI. By using our Website and services, you agree to these Terms.
 
-1. Description of ShipFast
+1. Description of NeverMissAI
 
-ShipFast is a platform that offers a JavaScript code boilerplate to assist entrepreneurs in launching their startups more efficiently.
+NeverMissAI is a platform that offers AI-powered goal reminder services to help users stay on track with their objectives.
 
 2. Ownership and Usage Rights
 
-When you purchase a package from ShipFast, you gain the right to download and use the code provided for creating applications. You own the code you create but do not have the right to resell it. We offer a full refund within 7 days of purchase, as specified in our refund policy.
+When you purchase a package from NeverMissAI, you gain access to our AI-powered goal reminder services. You own the goals and data you create but do not have the right to resell our services. We offer a full refund within 7 days of purchase, as specified in our refund policy.
 
 3. User Data and Privacy
 
@@ -65,15 +65,15 @@ We use web cookies to collect non-personal data for the purpose of improving our
 
 5. Governing Law
 
-These Terms are governed by the laws of France.
+These Terms are governed by the laws of India.
 
 6. Updates to the Terms
 
 We may update these Terms from time to time. Users will be notified of any changes via email.
 
-For any questions or concerns regarding these Terms of Service, please contact us at marc@nevermissai.com.
+For any questions or concerns regarding these Terms of Service, please contact us at sagarjaid321@gmail.com
 
-Thank you for using ShipFast!`}
+Thank you for using NeverMissAI!`}
         </pre>
       </div>
     </main>

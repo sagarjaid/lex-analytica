@@ -69,11 +69,11 @@ const config = {
   },
   resend: {
     // REQUIRED — Email 'From' field to be used when sending magic login links
-    fromNoReply: `Sagar <sagarjaid@gmail.com>`,
+    fromNoReply: `Sagar <sagarjaid321@gmail.com>`,
     // REQUIRED — Email 'From' field to be used when sending other emails, like abandoned carts, updates etc..
-    fromAdmin: `Sagar at NverMissAI <sagarjaid@gmail.com>`,
+    fromAdmin: `Sagar at NeverMissAI <sagarjaid321@gmail.com>`,
     // Email shown to customer if need support. Leave empty if not needed => if empty, set up Crisp above, otherwise you won't be able to offer customer support."
-    supportEmail: 'sagarjaid@gmail.com',
+    supportEmail: 'sagarjaid321@gmail.com',
   },
   colors: {
     // REQUIRED — The DaisyUI theme to use (added to the main layout.js). Leave blank for default (light & dark mode). If you any other theme than light/dark, you need to add it in config.tailwind.js in daisyui.themes.
