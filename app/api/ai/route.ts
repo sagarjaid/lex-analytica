@@ -49,7 +49,7 @@ export async function POST(req: Request) {
     const { goal_id, phoneNumber, task, language, voice } = body;
 
     console.log('Received request:', { goal_id, phoneNumber, task, language, voice });
-    console.log('Request body:', JSON.stringify(body, null, 2));
+    console.log('Request body:', JSON.stringify(body));
 
     if (!goal_id) {
       console.error('Missing goal_id in request');

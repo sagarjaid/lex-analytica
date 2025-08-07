@@ -308,40 +308,40 @@ export default function GoalsPage() {
   const getStatusBadge = (status: GoalStatus) => {
     switch (status) {
       case 'created':
-        return <Badge variant="secondary">Created</Badge>;
+        return <Badge variant="secondary" className="text-[8px] px-1.5 py-0.5">Created</Badge>;
       case 'active':
-        return <Badge variant="default">Active</Badge>;
+        return <Badge variant="default" className="text-[8px] px-1.5 py-0.5">Active</Badge>;
       case 'paused':
-        return <Badge variant="outline">Paused</Badge>;
+        return <Badge variant="outline" className="text-[8px] px-1.5 py-0.5">Paused</Badge>;
       case 'completed':
-        return <Badge variant="default">Completed</Badge>;
+        return <Badge variant="default" className="text-[8px] px-1.5 py-0.5">Completed</Badge>;
       case 'failed':
-        return <Badge variant="destructive">Failed</Badge>;
+        return <Badge variant="destructive" className="text-[8px] px-1.5 py-0.5">Failed</Badge>;
       case 'expired':
-        return <Badge variant="outline">Expired</Badge>;
+        return <Badge variant="outline" className="text-[8px] px-1.5 py-0.5">Expired</Badge>;
       default:
-        return <Badge variant="outline">{status}</Badge>;
+        return <Badge variant="outline" className="text-[8px] px-1.5 py-0.5">{status}</Badge>;
     }
   };
 
   const getCallStatusBadge = (status: CallStatus) => {
     switch (status) {
       case 'initiated':
-        return <Badge variant="secondary">Initiated</Badge>;
+        return <Badge variant="secondary" className="text-[10px] px-1.5 py-0.5">Initiated</Badge>;
       case 'in_progress':
-        return <Badge variant="default">In Progress</Badge>;
+        return <Badge variant="default" className="text-[10px] px-1.5 py-0.5">In Progress</Badge>;
       case 'completed':
-        return <Badge variant="default">Completed</Badge>;
+        return <Badge variant="default" className="text-[10px] px-1.5 py-0.5">Completed</Badge>;
       case 'failed':
-        return <Badge variant="destructive">Failed</Badge>;
+        return <Badge variant="destructive" className="text-[10px] px-1.5 py-0.5">Failed</Badge>;
       case 'no_answer':
-        return <Badge variant="outline">No Answer</Badge>;
+        return <Badge variant="outline" className="text-[10px] px-1.5 py-0.5">No Answer</Badge>;
       case 'busy':
-        return <Badge variant="outline">Busy</Badge>;
+        return <Badge variant="outline" className="text-[10px] px-1.5 py-0.5">Busy</Badge>;
       case 'cancelled':
-        return <Badge variant="outline">Cancelled</Badge>;
+        return <Badge variant="outline" className="text-[10px] px-1.5 py-0.5">Cancelled</Badge>;
       default:
-        return <Badge variant="outline">{status}</Badge>;
+        return <Badge variant="outline" className="text-[10px] px-1.5 py-0.5">{status}</Badge>;
     }
   };
 
@@ -515,7 +515,7 @@ export default function GoalsPage() {
                       {/* Expanded Content */}
                       {expandedGoals.has(goal.id) && (
                         <div className="mt-6 pt-6 border-t border-gray-100 text-sm">
-                          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <div>
                               <h4 className="font-semibold text-gray-900 mb-3">AI Configuration</h4>
                               <div className="space-y-2">
@@ -577,41 +577,50 @@ export default function GoalsPage() {
                                 )}
                               </div>
                             </div>
-
-                            <div>
-                              <h4 className="font-semibold text-gray-900 mb-3">Call History</h4>
-                              {callLogs[goal.id] && callLogs[goal.id].length > 0 ? (
-                                <div className="space-y-2">
-                                  {callLogs[goal.id].slice(0, 3).map((log) => (
-                                    <div key={log.id} className="border-l-2 border-gray-200 pl-3">
-                                      <div className="flex items-center gap-2 mb-1">
-                                        {getCallStatusBadge(log.status)}
-                                        <span className="text-gray-600 text-xs">
-                                          {new Date(log.created_at).toLocaleDateString()}
-                                        </span>
-                                      </div>
-                                      {log.duration_seconds && (
-                                        <p className="text-gray-600 text-xs">
-                                          Duration: {Math.round(log.duration_seconds)}s
-                                        </p>
-                                      )}
-                                      {log.error_message && (
-                                        <p className="text-red-600 text-xs">
-                                          Error: {log.error_message}
-                                        </p>
-                                      )}
-                                    </div>
-                                  ))}
-                                  {callLogs[goal.id].length > 3 && (
-                                    <p className="text-gray-500 text-xs">
-                                      +{callLogs[goal.id].length - 3} more calls
-                                    </p>
-                                  )}
-                                </div>
-                              ) : (
-                                <p className="text-gray-500 text-xs">No call history yet</p>
-                              )}
+                          </div>
+                          
+                          {/* Divider */}
+                          <div className="pt-6  border-gray-200">
+                            <div className="flex items-center">
+                              <div className="flex-1 border-t border-gray-300"></div>
+                              <span className="px-3 text-xs text-gray-500">Call History</span>
+                              <div className="flex-1 border-t border-gray-300"></div>
                             </div>
+                          </div>
+                          
+                          {/* Call History Section */}
+                          <div className="mt-4">
+                            {callLogs[goal.id] && callLogs[goal.id].length > 0 ? (
+                              <div className="space-y-3">
+                                {callLogs[goal.id].slice(0, 3).map((log) => (
+                                  <div key={log.id} className="border-l-2 border-gray-200 pl-3">
+                                    <div className="flex items-center gap-2 mb-1">
+                                      {getCallStatusBadge(log.status)}
+                                      <span className="text-gray-600 text-xs">
+                                        {new Date(log.created_at).toLocaleDateString()}
+                                      </span>
+                                    </div>
+                                    {log.duration_seconds && (
+                                      <p className="text-gray-600 text-xs">
+                                        Duration: {Math.round(log.duration_seconds)}s
+                                      </p>
+                                    )}
+                                    {log.error_message && (
+                                      <p className="text-red-600 text-xs">
+                                        Error: {log.error_message}
+                                      </p>
+                                    )}
+                                  </div>
+                                ))}
+                                {callLogs[goal.id].length > 3 && (
+                                  <p className="text-gray-500 text-xs">
+                                    +{callLogs[goal.id].length - 3} more calls
+                                  </p>
+                                )}
+                              </div>
+                            ) : (
+                              <p className="text-gray-500 text-xs">No call history yet</p>
+                            )}
                           </div>
                         </div>
                       )}

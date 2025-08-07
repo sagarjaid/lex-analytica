@@ -6,7 +6,7 @@ import { NextResponse } from 'next/server';
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    console.log('Call status webhook received:', JSON.stringify(body, null, 2));
+    console.log('Call status webhook received:', JSON.stringify(body));
     
     const { 
       call_id, 
@@ -17,7 +17,6 @@ export async function POST(req: Request) {
       end_at,
       started_at,
       corrected_duration,
-      transcript,
       concatenated_transcript,
       disposition_tag,
       answered_by,
@@ -48,7 +47,7 @@ export async function POST(req: Request) {
         started_at: started_at,
         end_at: end_at,
         corrected_duration: corrected_duration,
-        transcript: transcript,
+        transcript: concatenated_transcript,
         disposition_tag: disposition_tag,
         answered_by: answered_by,
         call_ended_by: call_ended_by,
