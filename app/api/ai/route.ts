@@ -48,6 +48,7 @@ export async function POST(req: Request) {
     const { goal_id, phoneNumber, task, language, voice } = body;
 
     console.log('Received request:', { goal_id, phoneNumber, task, language, voice });
+    console.log('Request body:', JSON.stringify(body, null, 2));
 
     if (!goal_id) {
       console.error('Missing goal_id in request');
@@ -66,10 +67,22 @@ export async function POST(req: Request) {
       );
     }
 
+    // Validate UUID format
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(goal_id.trim())) {
+      console.error('Invalid UUID format for goal_id:', goal_id);
+      return NextResponse.json(
+        { error: 'Invalid UUID format for Goal ID' },
+        { status: 400, headers }
+      );
+    }
+
     // Initialize Supabase client
     const supabase = createClient();
 
     // Get the goal details with proper headers
+    console.log('Searching for goal with ID:', goal_id.trim());
+    
     const { data: goal, error: goalError } = await supabase
       .from('goals')
       .select('*')
@@ -78,6 +91,45 @@ export async function POST(req: Request) {
 
     if (goalError) {
       console.error('Supabase error fetching goal:', goalError);
+      console.error('Goal ID that failed:', goal_id.trim());
+      
+      // Let's also try to see if there are any goals in the database
+      const { data: allGoals, error: allGoalsError } = await supabase
+        .from('goals')
+        .select('id, title, created_at')
+        .limit(5);
+      
+      if (!allGoalsError && allGoals) {
+        console.log('Available goals in database:', allGoals);
+      }
+      
+      // Also check if there are any goals with similar IDs (case insensitive)
+      const { data: similarGoals, error: similarError } = await supabase
+        .from('goals')
+        .select('id, title, created_at')
+        .ilike('id', `%${goal_id.trim().slice(0, 8)}%`)
+        .limit(3);
+      
+      if (!similarError && similarGoals && similarGoals.length > 0) {
+        console.log('Similar goal IDs found:', similarGoals);
+      }
+      
+      // Log the error to call_logs for debugging
+      try {
+        await supabase.from('call_logs').insert({
+          goal_id: goal_id.trim(),
+          user_id: null, // We don't have user_id at this point
+          call_id: `error-${Date.now()}`,
+          status: 'failed',
+          goal_title: 'Unknown',
+          phone_number: 'Unknown',
+          error_message: `Goal not found: ${goalError.message}`,
+          created_at: new Date().toISOString(),
+        });
+      } catch (logError) {
+        console.error('Error logging goal not found:', logError);
+      }
+      
       return NextResponse.json({ error: 'Goal not found' }, { status: 404, headers });
     }
 

@@ -6,6 +6,8 @@ import { NextResponse } from 'next/server';
 export async function POST(req: Request) {
   try {
     const body = await req.json();
+    console.log('Call status webhook received:', JSON.stringify(body, null, 2));
+    
     const { 
       call_id, 
       status, 
@@ -15,6 +17,7 @@ export async function POST(req: Request) {
     } = body;
 
     if (!call_id) {
+      console.error('Missing call_id in webhook');
       return NextResponse.json(
         { error: 'Call ID is required' },
         { status: 400 }
@@ -45,24 +48,34 @@ export async function POST(req: Request) {
 
     // If the call was successful, update the goal status
     if (status === 'completed' && goal_id) {
-      await supabase
+      console.log('Updating goal status to active for goal_id:', goal_id);
+      const { error: goalUpdateError } = await supabase
         .from('goals')
         .update({
           status: 'active',
           updated_at: new Date().toISOString(),
         })
         .eq('id', goal_id);
+      
+      if (goalUpdateError) {
+        console.error('Error updating goal status to active:', goalUpdateError);
+      }
     }
 
     // If the call failed, update the goal status
     if (['failed', 'no_answer', 'busy'].includes(status) && goal_id) {
-      await supabase
+      console.log('Updating goal status to failed for goal_id:', goal_id);
+      const { error: goalUpdateError } = await supabase
         .from('goals')
         .update({
           status: 'failed',
           updated_at: new Date().toISOString(),
         })
         .eq('id', goal_id);
+      
+      if (goalUpdateError) {
+        console.error('Error updating goal status to failed:', goalUpdateError);
+      }
     }
 
     return NextResponse.json({
