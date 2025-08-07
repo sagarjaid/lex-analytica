@@ -9,8 +9,21 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ThemeToggle from "@/components/ThemeToggle";
+import { getSEOTags } from "@/lib/seo";
+import config from "@/config";
 
 export const dynamic = "force-dynamic";
+
+export const metadata = getSEOTags({
+  title: `Dashboard | ${config.appName}`,
+  description: 'Manage your life goals, tasks, and habits with AI-powered reminders. Add new goals, track progress, and never miss important milestones.',
+  canonicalUrlRelative: '/dash',
+  openGraph: {
+    title: `Dashboard | ${config.appName}`,
+    description: 'Manage your life goals, tasks, and habits with AI-powered reminders.',
+    type: 'website',
+  },
+});
 
 export default async function Dashboard() {
   return (

@@ -17,6 +17,19 @@ import ThemeToggle from "@/components/ThemeToggle";
 
 
 import UserInfo from '@/components/User';
+import { getSEOTags } from "@/lib/seo";
+import config from "@/config";
+
+export const metadata = getSEOTags({
+  title: `Account | ${config.appName}`,
+  description: 'Manage your NeverMissAI account settings, subscription, and preferences. Update your profile and control your AI-powered goal reminders.',
+  canonicalUrlRelative: '/dash/account',
+  openGraph: {
+    title: `Account | ${config.appName}`,
+    description: 'Manage your NeverMissAI account settings and preferences.',
+    type: 'website',
+  },
+});
 
 export default function Dashboard() {
   return (

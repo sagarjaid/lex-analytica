@@ -1,33 +1,23 @@
 /** @format */
 
-import { ReactNode } from 'react';
-import { getSEOTags } from '@/lib/seo';
-import config from '@/config';
-import { redirect } from 'next/navigation';
-import { createClient } from '@/lib/supabase/server';
+import { getSEOTags } from "@/lib/seo";
+import config from "@/config";
 
 export const metadata = getSEOTags({
-  title: `Sign In | ${config.appName}`,
-  description:
-    'Sign in to your nevermissai account to access high-paying nevermissai jobs and opportunities across India.',
+  title: `Login | ${config.appName}`,
+  description: 'Sign in to your NeverMissAI account to manage your life goals and receive AI-powered phone call reminders.',
   canonicalUrlRelative: '/login',
-  keywords: ['sign in', 'login', 'nevermissai jobs', 'account access'],
+  openGraph: {
+    title: `Login | ${config.appName}`,
+    description: 'Sign in to your NeverMissAI account to manage your life goals and receive AI-powered phone call reminders.',
+    type: 'website',
+  },
 });
 
-export default async function SignInLayout({
+export default function LoginLayout({
   children,
 }: {
-  children: ReactNode;
+  children: React.ReactNode;
 }) {
-  const supabase = createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (user) {
-    redirect(config.auth.callbackUrl);
-  }
-
-  return children;
+  return <>{children}</>;
 }

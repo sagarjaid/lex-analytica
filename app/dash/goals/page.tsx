@@ -422,24 +422,26 @@ export default function GoalsPage() {
           </p>
 
           <div className="space-y-4">
-            {/* Add New Goal Card */}
-            <Link
-            href="/dash/add"
-            className="flex-1 border border-gray-200 rounded-xl shadow p-4 flex items-start gap-3 md:gap-4 hover:shadow-lg transition"
-          >
-            <div className="bg-gray-100 mt-1 rounded-full  ">
-                <Plus className="w-6 h-6 text-gray-700" />
-              </div>
-            <div className="flex flex-col gap-1">
-              
-            
-              <h2 className="text-lg font-semibold text-gray-900">Add New Goal</h2>
-                <p className="text-gray-600 text-xs">
-               Create a Goal, AI will call on your mobile number to remind your
-               goal
-             </p>
-             </div>
-          </Link>
+            {/* Add New Goal Card - Only show when there are existing goals */}
+            {goals.length > 0 && (
+              <Link
+                href="/dash/add"
+                className="flex-1 border border-gray-200 rounded-xl shadow p-4 flex items-start gap-3 md:gap-4 hover:shadow-lg transition"
+              >
+                <div className="bg-gray-100 mt-1 rounded-full  ">
+                    <Plus className="w-6 h-6 text-gray-700" />
+                  </div>
+                <div className="flex flex-col gap-1">
+                  
+                
+                  <h2 className="text-lg font-semibold text-gray-900">Add New Goal</h2>
+                    <p className="text-gray-600 text-xs">
+                   Create a Goal, AI will call on your mobile number to remind your
+                   goal
+                 </p>
+                 </div>
+              </Link>
+            )}
 
             {/* Goals List */}
             {goals.length > 0 && (

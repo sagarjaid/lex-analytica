@@ -24,13 +24,23 @@ export const viewport: Viewport = {
 // You can override them in each page passing params to getSOTags() function.
 export const metadata = getSEOTags({
   title:
-    'BasedinBitcoin - Track asset prices in real-time against Bitcoin (BTC)',
+    'NeverMissAI - AI-Powered Goal Reminders via Phone Calls',
   description:
-    "Compare any asset values directly against Bitcoin's current market price.",
+    'Never miss your life goals with AI-powered phone call reminders. Set goals, tasks, and habits that get reminded via intelligent AI calls to keep you on track.',
+  keywords: ['AI reminders', 'goal tracking', 'phone calls', 'habit formation', 'task management', 'life goals', 'AI assistant', 'productivity', 'personal development'],
   canonicalUrlRelative: '/',
   extraTags: {
     'google-site-verification': 'bpVto528QOEsbHsk4o2dP8yL3DMcQb6kFWjoQUgSoq0',
     'google-adsense-account': 'ca-pub-8500986101092156',
+    robots: 'index, follow',
+    'theme-color': '#3B82F6',
+    'apple-mobile-web-app-capable': 'yes',
+    'apple-mobile-web-app-status-bar-style': 'default',
+    'apple-mobile-web-app-title': 'NeverMissAI',
+    'application-name': 'NeverMissAI',
+    'msapplication-TileColor': '#3B82F6',
+    'msapplication-config': '/browserconfig.xml',
+    'format-detection': 'telephone=no',
   },
 });
 

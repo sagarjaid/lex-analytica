@@ -89,10 +89,20 @@ export const renderSchemaTags = () => {
           url: `https://${config.domainName}/`,
           author: {
             "@type": "Person",
-            name: "Marc Lou",
+            name: "Sagar Jaid",
           },
-          datePublished: "2023-08-01",
-          applicationCategory: "EducationalApplication",
+          datePublished: "2024-01-01",
+          applicationCategory: "ProductivityApplication",
+          operatingSystem: "Web",
+          applicationSubCategory: "Goal Tracking",
+          featureList: [
+            "AI-powered phone call reminders",
+            "Goal setting and tracking",
+            "Customizable schedules",
+            "Multiple AI personas",
+            "Multi-language support",
+            "Timezone support"
+          ],
           aggregateRating: {
             "@type": "AggregateRating",
             ratingValue: "4.8",
@@ -101,10 +111,14 @@ export const renderSchemaTags = () => {
           offers: [
             {
               "@type": "Offer",
-              price: "9.00",
+              price: "0",
               priceCurrency: "USD",
+              description: "Free Plan",
             },
           ],
+          softwareVersion: "1.0.0",
+          downloadUrl: `https://${config.domainName}/`,
+          installUrl: `https://${config.domainName}/`,
         }),
       }}
     ></script>

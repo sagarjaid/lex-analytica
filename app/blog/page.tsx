@@ -5,10 +5,16 @@ import config from "@/config";
 import { getSEOTags } from "@/lib/seo";
 
 export const metadata = getSEOTags({
-  title: `${config.appName} Blog | Stripe Chargeback Protection`,
+  title: `${config.appName} Blog | AI Goal Reminders & Productivity Tips`,
   description:
-    "Learn how to prevent chargebacks, how to accept payments online, and keep your Stripe account in good standing",
+    "Learn how to achieve your life goals with AI-powered phone call reminders. Get productivity tips, goal-setting strategies, and insights on using AI for personal development.",
+  keywords: ['AI reminders', 'productivity tips', 'goal setting', 'personal development', 'AI assistant', 'life goals'],
   canonicalUrlRelative: "/blog",
+  openGraph: {
+    title: `${config.appName} Blog | AI Goal Reminders & Productivity Tips`,
+    description: "Learn how to achieve your life goals with AI-powered phone call reminders.",
+    type: 'website',
+  },
 });
 
 export default async function Blog() {

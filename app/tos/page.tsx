@@ -27,7 +27,13 @@ import config from "@/config";
 
 export const metadata = getSEOTags({
   title: `Terms and Conditions | ${config.appName}`,
+  description: 'Read the terms and conditions for using NeverMissAI. Understand your rights and responsibilities when using our AI-powered goal reminder service.',
   canonicalUrlRelative: "/tos",
+  openGraph: {
+    title: `Terms and Conditions | ${config.appName}`,
+    description: 'Read the terms and conditions for using NeverMissAI.',
+    type: 'website',
+  },
 });
 
 const TOS = () => {

@@ -23,6 +23,20 @@ import usedby from "@/public/usedby.png";
 import Phone from "@/components/Phone";
 import Iphone from "@/components/Iphone";
 import blue from "@/app/Blue.png";
+import { getSEOTags, renderSchemaTags } from "@/lib/seo";
+import config from "@/config";
+
+export const metadata = getSEOTags({
+  title: 'NeverMissAI - AI-Powered Goal Reminders via Phone Calls',
+  description: 'Never miss your life goals with AI-powered phone call reminders. Set goals, tasks, and habits that get reminded via intelligent AI calls to keep you on track.',
+  keywords: ['AI reminders', 'goal tracking', 'phone calls', 'habit formation', 'task management', 'life goals', 'AI assistant', 'productivity'],
+  canonicalUrlRelative: '/',
+  openGraph: {
+    title: 'NeverMissAI - AI-Powered Goal Reminders via Phone Calls',
+    description: 'Never miss your life goals with AI-powered phone call reminders. Set goals, tasks, and habits that get reminded via intelligent AI calls to keep you on track.',
+    type: 'website',
+  },
+});
 
 export default function Home() {
   const handleSignOut = () => {
@@ -30,6 +44,7 @@ export default function Home() {
   };
   return (
     <>
+      {renderSchemaTags()}
       <main className="flex flex-col gap-4 items-center w-full justify-center bg-white bg-[url('/bg.svg')] bg-cover bg-center bg-no-repeat">
         {/* <div className='bg-green-500 text-white text-sm w-full flex justify-center items-center p-2 py-3'>
           We are working on few new features, Errors may occur

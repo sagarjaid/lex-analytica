@@ -5,12 +5,12 @@ import { ConfigProps } from './types/config';
 
 const config = {
   // REQUIRED
-  appName: 'ShipFast',
+  appName: 'NeverMissAI',
   // REQUIRED: a short description of your app for SEO tags (can be overwritten)
   appDescription:
-    'The NextJS boilerplate with all you need to build your SaaS, AI tool, or any other web app.',
+    'Never miss your life goals with AI-powered phone call reminders. Set goals, tasks, and habits that get reminded via intelligent AI calls to keep you on track.',
   // REQUIRED (no https://, not trialing slash at the end, just the naked domain)
-  domainName: 'shipfa.st',
+  domainName: 'nevermissai.com',
   crisp: {
     // Crisp website ID. IF YOU DON'T USE CRISP: just remove this => Then add a support email in this config file (resend.supportEmail) otherwise customer support won't work.
     id: '',

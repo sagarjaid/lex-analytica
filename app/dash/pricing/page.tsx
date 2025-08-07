@@ -24,6 +24,19 @@ import ThemeToggle from "@/components/ThemeToggle";
 
 
 import Plans from '@/components/Plans';
+import { getSEOTags } from "@/lib/seo";
+import config from "@/config";
+
+export const metadata = getSEOTags({
+  title: `Pricing | ${config.appName}`,
+  description: 'Choose the perfect plan for your AI-powered goal reminders. Compare features, pricing, and find the best option for your productivity needs.',
+  canonicalUrlRelative: '/dash/pricing',
+  openGraph: {
+    title: `Pricing | ${config.appName}`,
+    description: 'Choose the perfect plan for your AI-powered goal reminders.',
+    type: 'website',
+  },
+});
 
 export default function Pricing() {
   return (

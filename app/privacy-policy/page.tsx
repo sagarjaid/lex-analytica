@@ -27,7 +27,13 @@ import config from "@/config";
 
 export const metadata = getSEOTags({
   title: `Privacy Policy | ${config.appName}`,
+  description: 'Learn how NeverMissAI protects your privacy and handles your personal data. Our commitment to data security and user privacy.',
   canonicalUrlRelative: "/privacy-policy",
+  openGraph: {
+    title: `Privacy Policy | ${config.appName}`,
+    description: 'Learn how NeverMissAI protects your privacy and handles your personal data.',
+    type: 'website',
+  },
 });
 
 const PrivacyPolicy = () => {
