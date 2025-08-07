@@ -31,7 +31,7 @@ export async function POST(req: Request) {
 
     // Call the blondai endpoint directly
     const response = await axios.post(
-      `${process.env.NEXT_PUBLIC_APP_URL}/api/blandai`,
+      `${process.env.NEXT_PUBLIC_APP_URL}/api/ai`,
       {
         goal_id: goal.id,
         phoneNumber: goal.phone_number,

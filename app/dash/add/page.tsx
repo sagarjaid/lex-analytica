@@ -904,7 +904,7 @@ export default function Dashboard() {
           enabled: isActive,
           title: goalName,
           saveResponses: true,
-          url: "https://nevermissai.com/api/blondai",
+          url: "https://nevermissai.com/api/ai",
           auth: {
             enable: false,
             user: "",
