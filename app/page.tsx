@@ -27,14 +27,25 @@ import { getSEOTags, renderSchemaTags } from "@/lib/seo";
 import config from "@/config";
 
 export const metadata = getSEOTags({
-  title: 'NeverMissAI - AI-Powered Goal Reminders via Phone Calls',
-  description: 'Never miss your life goals with AI-powered phone call reminders. Set goals, tasks, and habits that get reminded via intelligent AI calls to keep you on track.',
-  keywords: ['AI reminders', 'goal tracking', 'phone calls', 'habit formation', 'task management', 'life goals', 'AI assistant', 'productivity'],
-  canonicalUrlRelative: '/',
+  title: "NeverMissAI - AI-Powered Goal Reminders via Phone Calls",
+  description:
+    "Never miss your life goals with AI-powered phone call reminders. Set goals, tasks, and habits that get reminded via intelligent AI calls to keep you on track.",
+  keywords: [
+    "AI reminders",
+    "goal tracking",
+    "phone calls",
+    "habit formation",
+    "task management",
+    "life goals",
+    "AI assistant",
+    "productivity",
+  ],
+  canonicalUrlRelative: "/",
   openGraph: {
-    title: 'NeverMissAI - AI-Powered Goal Reminders via Phone Calls',
-    description: 'Never miss your life goals with AI-powered phone call reminders. Set goals, tasks, and habits that get reminded via intelligent AI calls to keep you on track.',
-    type: 'website',
+    title: "NeverMissAI - AI-Powered Goal Reminders via Phone Calls",
+    description:
+      "Never miss your life goals with AI-powered phone call reminders. Set goals, tasks, and habits that get reminded via intelligent AI calls to keep you on track.",
+    type: "website",
   },
 });
 
@@ -55,17 +66,17 @@ export default function Home() {
           </Suspense>
         </div>
 
+        <div className="w-full mx-auto px-8  bg-gradient-to-t from-white via-green-50 to-white pt-10 md:pt-20 text-center">
+          <h2 className="max-w-3xl mx-auto font-extrabold text-4xl md:text-5xl tracking-tight mb-4 leading-10">
+            Never miss your life Goals
+          </h2>
+          <p className="max-w-xl mx-auto font-bold text-gray-900 text-lg opacity-90 leading-relaxed mb-6 md:mb-12">
+            Your Life Goals, Tasks or Habits Reminded by{" "}
+            <span className="text-green-700">AI calls daily!</span>
+          </p>
+        </div>
+
         <section>
-          <div className="max-w-7xl mx-auto px-8 pt-10 md:pt-20 text-center">
-
-            <h2 className="max-w-3xl mx-auto font-extrabold text-4xl md:text-5xl tracking-tight mb-4 leading-10">
-              Never miss your life Goals
-            </h2>
-            <p className="max-w-xl mx-auto font-bold text-gray-900 text-lg opacity-90 leading-relaxed mb-6 md:mb-12">
-              Your Life Goals, Tasks or Habits Reminded by <span className="text-green-700">AI calls daily!</span> 
-            </p>
-          </div>
-
           <Suspense fallback={<div>Loading...</div>}>
             <Phone className="w-72 h-auto mx-auto" />
           </Suspense>
