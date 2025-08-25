@@ -834,12 +834,12 @@ export default function Dashboard() {
         const day = executionDate.getDate();
         const month = executionDate.getMonth() + 1;
 
-        // For one-time jobs, set expiration to 6 hours after execution time
+        // For one-time jobs, set expiration to 2 days after execution time
         // This ensures the job expires after execution or if it fails to execute
-        expiresAt = new Date(executionDate.getTime() + 6 * 60 * 60 * 1000);
+        expiresAt = new Date(executionDate.getTime() + 2 * 24 * 60 * 60 * 1000);
 
-        // Calculate expiration time for cron-job.org (6 hours after execution)
-        const expirationDateTime = new Date(executionDate.getTime() + 6 * 60 * 60 * 1000);
+        // Calculate expiration time for cron-job.org (2 days after execution)
+        const expirationDateTime = new Date(executionDate.getTime() + 2 * 24 * 60 * 60 * 1000);
         const expirationDateStr = expirationDateTime.toISOString().slice(0, 10); // YYYY-MM-DD
         const expirationTimeStr = expirationDateTime.toTimeString().slice(0, 5); // HH:MM
         
@@ -850,7 +850,7 @@ export default function Dashboard() {
           mdays: [day],
           months: [month],
           wdays: [-1],
-          expiresAt: formatDateTimeToNumber(expirationDateStr, expirationTimeStr), // Set to 6 hours after execution for cron-job.org
+          expiresAt: formatDateTimeToNumber(expirationDateStr, expirationTimeStr), // Set to 2 days after execution for cron-job.org
         };
         
         // Set next_execution_at for one-time goals
