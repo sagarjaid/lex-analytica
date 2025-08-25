@@ -52,12 +52,11 @@ import {
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Clock, Globe, Repeat, Calendar } from "lucide-react";
+import { Globe } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CronExpressionParser } from "cron-parser";
-import { DateTime } from "luxon";
 import { formatInTimeZone } from 'date-fns-tz';
 import { Goal } from "@/types";
+import { CronBuilder } from "@/components/cronBuilder";
 
 interface JobSchedule {
   timezone: string;
@@ -71,59 +70,9 @@ interface JobSchedule {
 
 
 
-const weekDays = [
-  { value: 0, label: "Sunday" },
-  { value: 1, label: "Monday" },
-  { value: 2, label: "Tuesday" },
-  { value: 3, label: "Wednesday" },
-  { value: 4, label: "Thursday" },
-  { value: 5, label: "Friday" },
-  { value: 6, label: "Saturday" },
-];
 
-const months = [
-  { value: 1, label: "January" },
-  { value: 2, label: "February" },
-  { value: 3, label: "March" },
-  { value: 4, label: "April" },
-  { value: 5, label: "May" },
-  { value: 6, label: "June" },
-  { value: 7, label: "July" },
-  { value: 8, label: "August" },
-  { value: 9, label: "September" },
-  { value: 10, label: "October" },
-  { value: 11, label: "November" },
-  { value: 12, label: "December" },
-];
 
-// Helper to convert schedule arrays to crontab fields
-function toCrontabField(arr: number[], min: number, max: number): string {
-  if (arr.includes(-1) || arr.length === max - min + 1) return "*";
-  return arr.sort((a, b) => a - b).join(",");
-}
 
-function getCrontabExpression(schedule: JobSchedule): string {
-  const min = toCrontabField(schedule.minutes, 0, 59);
-  const hour = toCrontabField(schedule.hours, 0, 23);
-  const mday = toCrontabField(schedule.mdays, 1, 31);
-  const month = toCrontabField(schedule.months, 1, 12);
-  const wday = toCrontabField(schedule.wdays, 0, 6);
-  return `${min} ${hour} ${mday} ${month} ${wday}`;
-}
-
-function getNextExecutions(cronExp: string, timezone: string): string[] {
-  try {
-    const cronInterval = CronExpressionParser.parse(cronExp, { tz: timezone });
-    const executions = [];
-    for (let i = 0; i < 5; i++) {
-      executions.push(cronInterval.next().toString());
-    }
-    return executions;
-  } catch {
-    /* ignore parse errors, show raw string */
-  }
-  return ["Invalid cron expression"];
-}
 
 export default function Dashboard() {
   const supabase = createClient();
@@ -193,18 +142,11 @@ export default function Dashboard() {
 
   // Scheduler states
   const [jobType, setJobType] = useState<"onetime" | "recurring">("onetime");
-  const [recurringType, setRecurringType] = useState<"simple" | "advanced">(
-    "simple"
-  );
-  const [oneTimeDate, setOneTimeDate] = useState("");
-  const [oneTimeTime, setOneTimeTime] = useState("");
-  const [simpleInterval, setSimpleInterval] = useState<
-    "daily" | "weekly" | "monthly" | "yearly"
-  >("daily");
-  const [simpleTime, setSimpleTime] = useState("09:00");
-  const [weeklyDay, setWeeklyDay] = useState<number>(1);
-  const [monthlyDay, setMonthlyDay] = useState<number>(1);
-  const [yearlyMonth, setYearlyMonth] = useState<number>(1);
+  const [cronExpression, setCronExpression] = useState("");
+  const [nextExecutions, setNextExecutions] = useState<string[]>([]);
+  const [cronValid, setCronValid] = useState(false);
+  const [expirationDate, setExpirationDate] = useState("");
+  const [expirationTime, setExpirationTime] = useState("");
   // Map browser timezone names to cron-job.org timezone names
   const mapBrowserTimezone = (browserTz: string): string => {
     const timezoneMap: Record<string, string> = {
@@ -370,7 +312,6 @@ export default function Dashboard() {
     return timezoneMap[browserTz] || browserTz;
   };
 
-  const [yearlyDay, setYearlyDay] = useState<number>(1);
   const [schedule, setSchedule] = useState<JobSchedule>(() => {
     const browserTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
     const mappedTz = mapBrowserTimezone(browserTz);
@@ -387,345 +328,83 @@ export default function Dashboard() {
       wdays: [],
     };
   });
-  const [expirationDate, setExpirationDate] = useState("");
-  const [expirationTime, setExpirationTime] = useState("");
   const [userChangedTimezone, setUserChangedTimezone] = useState(false);
 
-  const generateScheduleFromSimple = (): JobSchedule => {
-    const [hour, minute] = simpleTime.split(":").map(Number);
 
-    switch (simpleInterval) {
-      case "daily":
-        return {
-          ...schedule,
-          hours: [hour],
-          minutes: [minute],
-          mdays: [-1],
-          months: [-1],
-          wdays: [-1],
-        };
-      case "weekly":
-        return {
-          ...schedule,
-          hours: [hour],
-          minutes: [minute],
-          mdays: [-1],
-          months: [-1],
-          wdays: [weeklyDay],
-        };
-      case "monthly":
-        return {
-          ...schedule,
-          hours: [hour],
-          minutes: [minute],
-          mdays: [monthlyDay],
-          months: [-1],
-          wdays: [-1],
-        };
-      case "yearly":
-        return {
-          ...schedule,
-          hours: [hour],
-          minutes: [minute],
-          mdays: [yearlyDay],
-          months: [yearlyMonth],
-          wdays: [-1],
-        };
-      default:
-        return schedule;
-    }
-  };
 
-  // Compute crontab and next executions for recurring jobs (memoized)
-  const { cronExp, nextExecutions } = useMemo(() => {
-    if (jobType === "recurring") {
-      const effectiveSchedule =
-        recurringType === "simple" ? generateScheduleFromSimple() : schedule;
-      const cronExp = getCrontabExpression(effectiveSchedule);
-      const nextExecutions = getNextExecutions(
-        cronExp,
-        effectiveSchedule.timezone
-      );
-      return { cronExp, nextExecutions };
-    }
-    return { cronExp: "", nextExecutions: [] };
-  }, [
-    jobType,
-    recurringType,
-    schedule,
-    simpleTime,
-    simpleInterval,
-    weeklyDay,
-    monthlyDay,
-    yearlyDay,
-    yearlyMonth,
-  ]);
-
-  // Disable create button if cron is invalid
-  const isCronValid = !(
-    jobType === "recurring" && nextExecutions[0] === "Invalid cron expression"
-  );
-
-  const handleScheduleChange = (
-    field: keyof Omit<JobSchedule, "timezone" | "expiresAt">,
-    value: number | number[]
-  ) => {
-    setSchedule((prev) => {
-      const currentValue = prev[field];
-      if (!Array.isArray(currentValue)) return prev;
-
-      // If the value is -1 (Every X), clear the array and set only -1
-      if (value === -1) {
-        return { ...prev, [field]: [-1] };
-      }
-      // If we're setting a specific value and the array currently has -1, remove -1
-      if (currentValue.includes(-1)) {
-        return { ...prev, [field]: [] };
-      }
-      return { ...prev, [field]: value };
-    });
-  };
-
-  const toggleArrayValue = (
-    field: keyof Omit<JobSchedule, "timezone" | "expiresAt">,
-    value: number
-  ) => {
-    setSchedule((prev) => {
-      const currentArray = prev[field];
-      if (!Array.isArray(currentArray)) return prev;
-
-      // If clicking a specific value while "Every X" is active, remove "Every X" and add the value
-      if (currentArray.includes(-1)) {
-        return { ...prev, [field]: [value] };
-      }
-
-      // If clicking a value that's already selected, remove it
-      if (currentArray.includes(value)) {
-        const newArray = currentArray.filter((v) => v !== value);
-        // If array becomes empty, set it to "Every X"
-        return { ...prev, [field]: newArray.length === 0 ? [-1] : newArray };
-      }
-
-      // Add the new value and sort
-      const newArray = [...currentArray, value].sort((a, b) => a - b);
-      return { ...prev, [field]: newArray };
-    });
-  };
-
-  // Add helper functions to check if a field is in "Every X" mode
-  const isEveryMode = (
-    field: keyof Omit<JobSchedule, "timezone" | "expiresAt">
-  ): boolean => {
-    const value = schedule[field];
-    return Array.isArray(value) && value.includes(-1);
-  };
-
-  // Add helper function to get display value for checkboxes
-  const getCheckboxValue = (
-    field: keyof Omit<JobSchedule, "timezone" | "expiresAt">,
-    value: number
-  ): boolean => {
-    const array = schedule[field];
-    return (
-      Array.isArray(array) && (array.includes(-1) || array.includes(value))
-    );
-  };
-
-  const formatDateTimeToNumber = (date: string, time: string): number => {
-    if (!date || !time) return 0;
-    const dateTime = new Date(`${date}T${time}`);
-    const year = dateTime.getFullYear();
-    const month = String(dateTime.getMonth() + 1).padStart(2, "0");
-    const day = String(dateTime.getDate()).padStart(2, "0");
-    const hour = String(dateTime.getHours()).padStart(2, "0");
-    const minute = String(dateTime.getMinutes()).padStart(2, "0");
-    const second = String(dateTime.getSeconds()).padStart(2, "0");
-
-    return Number.parseInt(`${year}${month}${day}${hour}${minute}${second}`);
-  };
-
-  const getSchedulePreview = (): string => {
-    if (jobType === "onetime") {
-      if (!oneTimeDate || !oneTimeTime) return "Please select date and time";
-      const date = new Date(`${oneTimeDate}T${oneTimeTime}`);
-      return `Job will run once on ${date.toLocaleDateString()} at ${date.toLocaleTimeString(
-        [],
-        { hour: "2-digit", minute: "2-digit" }
-      )} and expire on the same day`;
-    }
-
-    if (recurringType === "simple") {
-      if (!simpleTime) return "Please select time";
-
-      const [hour, minute] = simpleTime.split(":").map(Number);
-      const timeStr = new Date(2000, 0, 1, hour, minute).toLocaleTimeString(
-        [],
-        { hour: "2-digit", minute: "2-digit" }
-      );
-      let dayName: string | undefined;
-      let suffix: string;
-      let monthName: string | undefined;
-      let daySuffix: string;
-
-      switch (simpleInterval) {
-        case "daily":
-          return `Job will repeat every day at ${timeStr}`;
-        case "weekly":
-          dayName =
-            weekDays.find((d) => d.value === weeklyDay)?.label || "Unknown";
-          return `Job will repeat every ${dayName} at ${timeStr}`;
-        case "monthly":
-          suffix = getOrdinalSuffix(monthlyDay);
-          return `Job will repeat every ${monthlyDay}${suffix} of the month at ${timeStr}`;
-        case "yearly":
-          monthName =
-            months.find((m) => m.value === yearlyMonth)?.label || "Unknown";
-          daySuffix = getOrdinalSuffix(yearlyDay);
-          return `Job will repeat every ${monthName} ${yearlyDay}${daySuffix} at ${timeStr}`;
-        default:
-          return "Please configure schedule";
-      }
-    }
-
-    // Advanced mode preview logic
-    const { hours, minutes, mdays, months: schedMonths, wdays } = schedule;
-
-    if (hours.length === 0 || minutes.length === 0) {
-      return "Please select at least one hour and minute";
-    }
-
-    let preview = "Job will repeat ";
-
-    // Frequency description
-    const isEveryDay =
-      mdays.includes(-1) ||
-      (mdays.length === 31 && mdays.every((d, i) => d === i + 1));
-    const isEveryMonth =
-      schedMonths.includes(-1) ||
-      (schedMonths.length === 12 && schedMonths.every((m, i) => m === i + 1));
-    const isEveryWeekday = wdays.includes(-1) || wdays.length === 7;
-
-    if (isEveryDay && isEveryMonth && isEveryWeekday) {
-      preview += "every day";
-    } else if (wdays.length > 0 && !wdays.includes(-1)) {
-      const dayNames = wdays
-        .map((d) => weekDays.find((wd) => wd.value === d)?.label)
-        .filter(Boolean);
-      if (dayNames.length === 1) {
-        preview += `every ${dayNames[0]}`;
-      } else if (dayNames.length === 7) {
-        preview += "every day";
-      } else {
-        preview += `on ${dayNames.slice(0, -1).join(", ")} and ${
-          dayNames[dayNames.length - 1]
-        }`;
-      }
-    } else if (mdays.length > 0 && !mdays.includes(-1)) {
-      if (mdays.length === 1) {
-        const suffix = getOrdinalSuffix(mdays[0]);
-        preview += `on the ${mdays[0]}${suffix} of each month`;
-      } else {
-        const dayList = mdays
-          .map((d) => `${d}${getOrdinalSuffix(d)}`)
-          .join(", ");
-        preview += `on the ${dayList} of each month`;
-      }
-    } else {
-      preview += "based on custom schedule";
-    }
-
-    // Time description
-    if (hours.length === 1 && minutes.length === 1) {
-      const timeStr = new Date(
-        2000,
-        0,
-        1,
-        hours[0],
-        minutes[0]
-      ).toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
+  // CronBuilder integration
+  const handleCronBuilderChange = (data: {
+    cronExpression: string;
+    nextExecutions: string[];
+    isValid: boolean;
+    scheduleType: "onetime" | "recurring";
+    scheduleExpires?: {
+      day: string;
+      month: string;
+      year: string;
+      hour: string;
+      minute: string;
+    };
+    scheduleExpiresEnabled: boolean;
+  }) => {
+    console.log("CronBuilder data received:", data);
+    setCronExpression(data.cronExpression);
+    setNextExecutions(data.nextExecutions);
+    setCronValid(data.isValid);
+    setJobType(data.scheduleType);
+    
+    // Handle expiration data
+    if (data.scheduleExpiresEnabled && data.scheduleExpires) {
+      const { day, month, year, hour, minute } = data.scheduleExpires;
+      // Convert month name to number (1-12)
+      const monthMap: Record<string, string> = {
+        "January": "01", "February": "02", "March": "03", "April": "04",
+        "May": "05", "June": "06", "July": "07", "August": "08",
+        "September": "09", "October": "10", "November": "11", "December": "12"
+      };
+      const monthNum = monthMap[month] || "01";
+      const formattedDate = `${year}-${monthNum}-${day.padStart(2, '0')}`;
+      const formattedTime = `${hour.padStart(2, '0')}:${minute.padStart(2, '0')}`;
+      
+      setExpirationDate(formattedDate);
+      setExpirationTime(formattedTime);
+      
+      console.log("Expiration data received:", {
+        original: data.scheduleExpires,
+        formatted: { date: formattedDate, time: formattedTime }
       });
-      preview += ` at ${timeStr}`;
-    } else if (hours.includes(-1) && minutes.includes(-1)) {
-      preview += " every minute";
-    } else if (hours.includes(-1)) {
-      if (minutes.length === 1) {
-        preview += ` at ${minutes[0]} minutes past every hour`;
-      } else {
-        preview += ` at minutes ${minutes.join(", ")} of every hour`;
-      }
-    } else if (minutes.includes(-1)) {
-      if (hours.length === 1) {
-        preview += ` every minute during hour ${hours[0]}`;
-      } else {
-        preview += ` every minute during hours ${hours.join(", ")}`;
-      }
     } else {
-      const times = hours
-        .flatMap((h) =>
-          minutes.map((m) =>
-            new Date(2000, 0, 1, h, m).toLocaleTimeString([], {
-              hour: "2-digit",
-              minute: "2-digit",
-            })
-          )
-        )
-        .slice(0, 3); // Show max 3 times
-
-      if (hours.length * minutes.length <= 3) {
-        preview += ` at ${times.join(", ")}`;
-      } else {
-        preview += ` at ${times.join(", ")} and ${
-          hours.length * minutes.length - 3
-        } more times`;
-      }
+      setExpirationDate("");
+      setExpirationTime("");
+      console.log("No expiration data or expiration disabled");
     }
-
-    // Month restriction
-    if (
-      schedMonths.length > 0 &&
-      !schedMonths.includes(-1) &&
-      schedMonths.length < 12
-    ) {
-      const monthNames = schedMonths
-        .map((m) => months.find((month) => month.value === m)?.label)
-        .filter(Boolean);
-      if (monthNames.length === 1) {
-        preview += ` in ${monthNames[0]}`;
-      } else {
-        preview += ` in ${monthNames.slice(0, -1).join(", ")} and ${
-          monthNames[monthNames.length - 1]
-        }`;
-      }
-    }
-
-    // Add expiration if set
-    if (expirationDate && expirationTime) {
-      const expirationDateTime = new Date(
-        `${expirationDate}T${expirationTime}`
-      );
-      preview += ` until ${expirationDateTime.toLocaleDateString()} at ${expirationDateTime.toLocaleTimeString(
-        [],
-        { hour: "2-digit", minute: "2-digit" }
-      )}`;
-    }
-
-    return preview;
   };
 
-  const getOrdinalSuffix = (num: number): string => {
-    const j = num % 10;
-    const k = num % 100;
-    if (j === 1 && k !== 11) return "st";
-    if (j === 2 && k !== 12) return "nd";
-    if (j === 3 && k !== 13) return "rd";
-    return "th";
-  };
+  // Disable create button if form is incomplete or cron is invalid
+  const isCronValid = cronValid && cronExpression && goalName.trim() && persona.trim() && context.trim();
+  
+  // Debug logging
+  console.log("Current cron state:", {
+    cronExpression,
+    nextExecutions,
+    cronValid,
+    jobType,
+    isCronValid
+  });
+
+
+
+
+
+
+
+
 
   const getTimezoneDisplayName = (timezone: string): string => {
     return timezone;
   };
+
+
 
   const getTimezoneOffset = (timezone: string): string => {
     try {
@@ -817,59 +496,133 @@ export default function Dashboard() {
       return;
     }
 
+    if (!cronValid || !cronExpression.trim()) {
+      alert("Please configure a valid schedule using the CronBuilder");
+      return;
+    }
+
     try {
       // Generate goal ID on frontend first
       const goalId = uuidv4();
       
       console.log("Generated goal ID:", goalId);
       console.log("Goal ID type:", typeof goalId);
+      console.log("Cron validation data:", {
+        cronValid,
+        cronExpression,
+        jobType,
+        nextExecutions
+      });
       
       let finalSchedule: JobSchedule;
       let expiresAt: Date | null = null;
       let nextExecutionAt: Date | null = null;
 
+      // Use CronBuilder data for scheduling
       if (jobType === "onetime") {
-        const [hour, minute] = oneTimeTime.split(":").map(Number);
-        const executionDate = new Date(`${oneTimeDate}T${oneTimeTime}`);
-        const day = executionDate.getDate();
-        const month = executionDate.getMonth() + 1;
+        // For one-time jobs, parse the cron expression to get execution time
+        const cronParts = cronExpression.split(" ");
+        console.log("One-time cron parts:", cronParts);
+        if (cronParts.length === 5) {
+          const [minute, hour, day, month] = cronParts;
+          const currentYear = new Date().getFullYear();
+          const executionDate = new Date(currentYear, Number(month) - 1, Number(day), Number(hour), Number(minute));
 
         // For one-time jobs, set expiration to 2 days after execution time
-        // This ensures the job expires after execution or if it fails to execute
         expiresAt = new Date(executionDate.getTime() + 2 * 24 * 60 * 60 * 1000);
-
-        // Calculate expiration time for cron-job.org (2 days after execution)
-        const expirationDateTime = new Date(executionDate.getTime() + 2 * 24 * 60 * 60 * 1000);
-        const expirationDateStr = expirationDateTime.toISOString().slice(0, 10); // YYYY-MM-DD
-        const expirationTimeStr = expirationDateTime.toTimeString().slice(0, 5); // HH:MM
+          nextExecutionAt = executionDate;
         
-        finalSchedule = {
-          ...schedule,
-          hours: [hour],
-          minutes: [minute],
-          mdays: [day],
-          months: [month],
-          wdays: [-1],
-          expiresAt: formatDateTimeToNumber(expirationDateStr, expirationTimeStr), // Set to 2 days after execution for cron-job.org
-        };
-        
-        // Set next_execution_at for one-time goals
-        nextExecutionAt = executionDate;
+                 // Convert expiresAt to YYYYMMDDhhmmss format as required by cron-job.org API
+         const expiresAtFormatted = expiresAt.getFullYear() * 10000000000 + 
+           (expiresAt.getMonth() + 1) * 100000000 + 
+           expiresAt.getDate() * 1000000 + 
+           expiresAt.getHours() * 10000 + 
+           expiresAt.getMinutes() * 100 + 
+           expiresAt.getSeconds();
+         
+         finalSchedule = {
+           ...schedule,
+           hours: [Number(hour)],
+           minutes: [Number(minute)],
+           mdays: [Number(day)],
+           months: [Number(month)],
+           wdays: [-1],
+           expiresAt: expiresAtFormatted, // Use YYYYMMDDhhmmss format
+         };
+         
+         // Debug logging to verify the format
+         console.log("Original expiresAt Date:", expiresAt);
+         console.log("Formatted expiresAt (YYYYMMDDhhmmss):", expiresAtFormatted);
+         console.log("Final schedule being sent:", finalSchedule);
       } else {
-        finalSchedule =
-          recurringType === "simple"
-            ? generateScheduleFromSimple()
-            : {
+          throw new Error("Invalid one-time cron expression format");
+        }
+      } else {
+        // For recurring jobs, use the cron expression directly
+        // Parse the cron expression to extract schedule components
+        const cronParts = cronExpression.split(" ");
+        console.log("Recurring cron parts:", cronParts);
+        if (cronParts.length === 5) {
+          const [minute, hour, day, month, dayOfWeek] = cronParts;
+          
+          // Parse the cron expression to extract specific values
+          const hours = hour === "*" ? [-1] : hour.split(",").map(h => Number(h));
+          const minutes = minute === "*" ? [-1] : minute.split(",").map(m => Number(m));
+          const mdays = day === "*" ? [-1] : day.split(",").map(d => Number(d));
+          const months = month === "*" ? [-1] : month.split(",").map(m => Number(m));
+          const wdays = dayOfWeek === "*" ? [-1] : dayOfWeek.split(",").map(w => Number(w));
+          
+          finalSchedule = {
                 ...schedule,
-                expiresAt: formatDateTimeToNumber(expirationDate, expirationTime),
-              };
-        
-        // For recurring jobs, set expiration if specified by the user
-        // This allows users to set a custom expiration date/time for recurring jobs
+            hours,
+            minutes,
+            mdays,
+            months,
+            wdays,
+            expiresAt: 0, // No expiration for recurring jobs by default
+          };
+          
+                    // Set expiration if specified by the user
         if (expirationDate && expirationTime) {
           expiresAt = new Date(`${expirationDate}T${expirationTime}`);
+          
+          // Convert expiresAt to YYYYMMDDhhmmss format as required by cron-job.org API
+          const expiresAtFormatted = expiresAt.getFullYear() * 10000000000 + 
+            (expiresAt.getMonth() + 1) * 100000000 + 
+            expiresAt.getDate() * 1000000 + 
+            expiresAt.getHours() * 10000 + 
+            expiresAt.getMinutes() * 100 + 
+            expiresAt.getSeconds();
+          
+          finalSchedule.expiresAt = expiresAtFormatted;
+          
+          console.log("Recurring job expiration set:", {
+            originalDate: `${expirationDate}T${expirationTime}`,
+            parsedDate: expiresAt,
+            formattedExpiresAt: expiresAtFormatted
+          });
+        } else {
+          // For recurring jobs without expiration, set to 0 (no expiration)
+          finalSchedule.expiresAt = 0;
+          console.log("Recurring job: no expiration set");
+        }
+        } else {
+          throw new Error("Invalid recurring cron expression format");
         }
       }
+
+      if (!finalSchedule) {
+        throw new Error("Failed to create schedule from cron expression");
+      }
+      
+      // Debug logging for the final schedule
+      console.log("Final schedule being sent to cron-job.org:", {
+        schedule: finalSchedule,
+        cronExpression,
+        jobType,
+        expirationDate,
+        expirationTime
+      });
 
       // Create the cron job first with the generated goal ID
       const postData = {
@@ -1394,561 +1147,11 @@ export default function Dashboard() {
                   </div>
                 </div>
 
-                {/* Job Type Selection */}
-                <div className="space-y-4">
-                  <Label className="text-base font-medium">Schedule Type</Label>
-                  <RadioGroup
-                    value={jobType}
-                    onValueChange={(value: "onetime" | "recurring") =>
-                      setJobType(value)
-                    }
-                  >
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="onetime" id="onetime" />
-                      <Label
-                        htmlFor="onetime"
-                        className="flex items-center gap-2"
-                      >
-                        <Calendar className="w-4 h-4" />
-                        One-time execution
-                      </Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="recurring" id="recurring" />
-                      <Label
-                        htmlFor="recurring"
-                        className="flex items-center gap-2"
-                      >
-                        <Repeat className="w-4 h-4" />
-                        Recurring schedule
-                      </Label>
-                    </div>
-                  </RadioGroup>
-                </div>
-
-                {/* One-time Job Configuration */}
-                {jobType === "onetime" && (
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="text-base">
-                        One-time Execution
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg">
-                        <div className="flex items-start gap-2">
-                          <Calendar className="w-5 h-5 text-green-800 mt-0.5" />
-                          <div>
-                            <h4 className="font-medium text-green-800 mb-1 text-sm">
-                              Execution & Expiration Preview
-                            </h4>
-                            <p className="text-green-800 text-xs">
-                              {getSchedulePreview()}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                          <Label htmlFor="oneTimeDate">Date</Label>
-                          <Input
-                            id="oneTimeDate"
-                            type="date"
-                            value={oneTimeDate}
-                            onChange={(e) => setOneTimeDate(e.target.value)}
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label htmlFor="oneTimeTime">Time</Label>
-                          <Input
-                            id="oneTimeTime"
-                            type="time"
-                            value={oneTimeTime}
-                            onChange={(e) => setOneTimeTime(e.target.value)}
-                          />
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                )}
-
-                {/* Recurring Job Configuration */}
-                {jobType === "recurring" && (
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="text-base">
-                        Recurring Schedule
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                        <div className="flex items-start gap-2">
-                          <Clock className="w-5 h-5 text-blue-800 mt-0.5" />
-                          <div>
-                            <h4 className="font-medium text-sm text-blue-800 mb-1">
-                              Schedule Preview
-                            </h4>
-                            <p className="text-blue-800 text-xs">
-                              {getSchedulePreview()}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                      {/* Crontab and next executions block (for both simple and advanced) */}
-                      <div className="mb-6 p-4 bg-gray-50 border border-gray-200 rounded-lg">
-                        <div className="mb-2 text-base">
-                          <strong>Cron Jab Expression:</strong>
-                          <div className="flex items-center gap-2 mt-2 text-xs">
-                            <pre
-                              className={`border border-gray-300 ${
-                                isCronValid ? "bg-green-200" : "bg-red-200"
-                              } p-2 rounded select-all`}
-                            >
-                              {cronExp}
-                            </pre>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="ml-2 px-2 py-1 text-xs rounded hover:bg-gray-200"
-                              onClick={() => {
-                                navigator.clipboard.writeText(cronExp);
-                                // Optionally show a toast or alert here
-                              }}
-                              title="Copy to clipboard"
-                            >
-                              Copy
-                            </Button>
-                          </div>
-                        </div>
-                        <div>
-                          <strong className="text-base">
-                            Next 5 Executions:
-                          </strong>
-                          <ul className="list-disc flex flex-col gap-2 ml-3 mt-2 text-xs">
-                            {nextExecutions.map((exec, idx) => {
-                              // Try to parse as Date, fallback to string if invalid
-                              let formatted = exec;
-                              try {
-                                const dt = DateTime.fromJSDate(
-                                  new Date(exec)
-                                ).setZone(schedule.timezone);
-                                if (dt.isValid) {
-                                  formatted =
-                                    dt.toFormat(
-                                      "cccc, dd LLL yyyy HH:mm ZZZZ"
-                                    ) + ` (${schedule.timezone})`;
-                                }
-                              } catch {
-                                /* ignore parse errors, show raw string */
-                              }
-                              return <li key={idx}>{formatted}</li>;
-                            })}
-                          </ul>
-                        </div>
-                      </div>
-                      <Tabs
-                        value={recurringType}
-                        onValueChange={(value: "simple" | "advanced") =>
-                          setRecurringType(value)
-                        }
-                      >
-                        <TabsList className="grid w-full grid-cols-2">
-                          <TabsTrigger value="simple">Simple</TabsTrigger>
-                          <TabsTrigger value="advanced">Advanced</TabsTrigger>
-                        </TabsList>
-
-                        <TabsContent value="simple" className="space-y-4">
-                          <div className="space-y-4">
-                            <div className="space-y-2">
-                              <Label>Repeat Interval</Label>
-                              <Select
-                                value={simpleInterval}
-                                onValueChange={(
-                                  value:
-                                    | "daily"
-                                    | "weekly"
-                                    | "monthly"
-                                    | "yearly"
-                                ) => setSimpleInterval(value)}
-                              >
-                                <SelectTrigger>
-                                  <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="daily">Daily</SelectItem>
-                                  <SelectItem value="weekly">Weekly</SelectItem>
-                                  <SelectItem value="monthly">
-                                    Monthly
-                                  </SelectItem>
-                                  <SelectItem value="yearly">Yearly</SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </div>
-
-                            <div className="space-y-2">
-                              <Label htmlFor="simpleTime">Time</Label>
-                              <Input
-                                id="simpleTime"
-                                type="time"
-                                value={simpleTime}
-                                onChange={(e) => setSimpleTime(e.target.value)}
-                              />
-                            </div>
-
-                            {simpleInterval === "weekly" && (
-                              <div className="space-y-2">
-                                <Label>Day of Week</Label>
-                                <Select
-                                  value={weeklyDay.toString()}
-                                  onValueChange={(value) =>
-                                    setWeeklyDay(Number.parseInt(value))
-                                  }
-                                >
-                                  <SelectTrigger>
-                                    <SelectValue />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    {weekDays.map((day) => (
-                                      <SelectItem
-                                        key={day.value}
-                                        value={day.value.toString()}
-                                      >
-                                        {day.label}
-                                      </SelectItem>
-                                    ))}
-                                  </SelectContent>
-                                </Select>
-                              </div>
-                            )}
-
-                            {simpleInterval === "monthly" && (
-                              <div className="space-y-2">
-                                <Label htmlFor="monthlyDay">Day of Month</Label>
-                                <Input
-                                  id="monthlyDay"
-                                  type="number"
-                                  min="1"
-                                  max="31"
-                                  value={monthlyDay}
-                                  onChange={(e) =>
-                                    setMonthlyDay(
-                                      Number.parseInt(e.target.value)
-                                    )
-                                  }
-                                />
-                              </div>
-                            )}
-
-                            {simpleInterval === "yearly" && (
-                              <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                  <Label>Month</Label>
-                                  <Select
-                                    value={yearlyMonth.toString()}
-                                    onValueChange={(value) =>
-                                      setYearlyMonth(Number.parseInt(value))
-                                    }
-                                  >
-                                    <SelectTrigger>
-                                      <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                      {months.map((month) => (
-                                        <SelectItem
-                                          key={month.value}
-                                          value={month.value.toString()}
-                                        >
-                                          {month.label}
-                                        </SelectItem>
-                                      ))}
-                                    </SelectContent>
-                                  </Select>
-                                </div>
-                                <div className="space-y-2">
-                                  <Label htmlFor="yearlyDay">Day</Label>
-                                  <Input
-                                    id="yearlyDay"
-                                    type="number"
-                                    min="1"
-                                    max="31"
-                                    value={yearlyDay}
-                                    onChange={(e) =>
-                                      setYearlyDay(
-                                        Number.parseInt(e.target.value)
-                                      )
-                                    }
-                                  />
-                                </div>
-                              </div>
-                            )}
-                          </div>
-                        </TabsContent>
-
-                        <TabsContent value="advanced" className="space-y-6">
-                          {/* Minutes */}
-                          <div className="space-y-3">
-                            <Label>Minutes (0-59)</Label>
-                            <div className="grid grid-cols-12 gap-2">
-                              {Array.from({ length: 60 }, (_, i) => (
-                                <div
-                                  key={i}
-                                  className="flex items-center space-x-1"
-                                >
-                                  <Checkbox
-                                    id={`minute-${i}`}
-                                    checked={getCheckboxValue("minutes", i)}
-                                    disabled={isEveryMode("minutes")}
-                                    onCheckedChange={() =>
-                                      toggleArrayValue("minutes", i)
-                                    }
-                                  />
-                                  <Label
-                                    htmlFor={`minute-${i}`}
-                                    className="text-xs"
-                                  >
-                                    {i}
-                                  </Label>
-                                </div>
-                              ))}
-                            </div>
-                            <Button
-                              variant={
-                                isEveryMode("minutes") ? "default" : "outline"
-                              }
-                              size="sm"
-                              onClick={() =>
-                                handleScheduleChange(
-                                  "minutes",
-                                  isEveryMode("minutes") ? [] : [-1]
-                                )
-                              }
-                            >
-                              {isEveryMode("minutes")
-                                ? "Every Minute Selected"
-                                : "Every Minute"}
-                            </Button>
-                          </div>
-
-                          {/* Hours */}
-                          <div className="space-y-3">
-                            <Label>Hours (0-23)</Label>
-                            <div className="grid grid-cols-12 gap-2">
-                              {Array.from({ length: 24 }, (_, i) => (
-                                <div
-                                  key={i}
-                                  className="flex items-center space-x-1"
-                                >
-                                  <Checkbox
-                                    id={`hour-${i}`}
-                                    checked={getCheckboxValue("hours", i)}
-                                    disabled={isEveryMode("hours")}
-                                    onCheckedChange={() =>
-                                      toggleArrayValue("hours", i)
-                                    }
-                                  />
-                                  <Label
-                                    htmlFor={`hour-${i}`}
-                                    className="text-xs"
-                                  >
-                                    {i}
-                                  </Label>
-                                </div>
-                              ))}
-                            </div>
-                            <Button
-                              variant={
-                                isEveryMode("hours") ? "default" : "outline"
-                              }
-                              size="sm"
-                              onClick={() =>
-                                handleScheduleChange(
-                                  "hours",
-                                  isEveryMode("hours") ? [] : [-1]
-                                )
-                              }
-                            >
-                              {isEveryMode("hours")
-                                ? "Every Hour Selected"
-                                : "Every Hour"}
-                            </Button>
-                          </div>
-
-                          {/* Days of Month */}
-                          <div className="space-y-3">
-                            <Label>Days of Month (1-31)</Label>
-                            <div className="grid grid-cols-12 gap-2">
-                              {Array.from({ length: 31 }, (_, i) => (
-                                <div
-                                  key={i + 1}
-                                  className="flex items-center space-x-1"
-                                >
-                                  <Checkbox
-                                    id={`mday-${i + 1}`}
-                                    checked={getCheckboxValue("mdays", i + 1)}
-                                    disabled={isEveryMode("mdays")}
-                                    onCheckedChange={() =>
-                                      toggleArrayValue("mdays", i + 1)
-                                    }
-                                  />
-                                  <Label
-                                    htmlFor={`mday-${i + 1}`}
-                                    className="text-xs"
-                                  >
-                                    {i + 1}
-                                  </Label>
-                                </div>
-                              ))}
-                            </div>
-                            <Button
-                              variant={
-                                isEveryMode("mdays") ? "default" : "outline"
-                              }
-                              size="sm"
-                              onClick={() =>
-                                handleScheduleChange(
-                                  "mdays",
-                                  isEveryMode("mdays") ? [] : [-1]
-                                )
-                              }
-                            >
-                              {isEveryMode("mdays")
-                                ? "Every Day Selected"
-                                : "Every Day"}
-                            </Button>
-                          </div>
-
-                          {/* Months */}
-                          <div className="space-y-3">
-                            <Label>Months</Label>
-                            <div className="grid grid-cols-4 gap-2">
-                              {months.map((month) => (
-                                <div
-                                  key={month.value}
-                                  className="flex items-center space-x-2"
-                                >
-                                  <Checkbox
-                                    id={`month-${month.value}`}
-                                    checked={getCheckboxValue(
-                                      "months",
-                                      month.value
-                                    )}
-                                    disabled={isEveryMode("months")}
-                                    onCheckedChange={() =>
-                                      toggleArrayValue("months", month.value)
-                                    }
-                                  />
-                                  <Label
-                                    htmlFor={`month-${month.value}`}
-                                    className="text-sm"
-                                  >
-                                    {month.label}
-                                  </Label>
-                                </div>
-                              ))}
-                            </div>
-                            <Button
-                              variant={
-                                isEveryMode("months") ? "default" : "outline"
-                              }
-                              size="sm"
-                              onClick={() =>
-                                handleScheduleChange(
-                                  "months",
-                                  isEveryMode("months") ? [] : [-1]
-                                )
-                              }
-                            >
-                              {isEveryMode("months")
-                                ? "Every Month Selected"
-                                : "Every Month"}
-                            </Button>
-                          </div>
-
-                          {/* Days of Week */}
-                          <div className="space-y-3">
-                            <Label>Days of Week</Label>
-                            <div className="grid grid-cols-4 gap-2">
-                              {weekDays.map((day) => (
-                                <div
-                                  key={day.value}
-                                  className="flex items-center space-x-2"
-                                >
-                                  <Checkbox
-                                    id={`wday-${day.value}`}
-                                    checked={getCheckboxValue(
-                                      "wdays",
-                                      day.value
-                                    )}
-                                    disabled={isEveryMode("wdays")}
-                                    onCheckedChange={() =>
-                                      toggleArrayValue("wdays", day.value)
-                                    }
-                                  />
-                                  <Label
-                                    htmlFor={`wday-${day.value}`}
-                                    className="text-sm"
-                                  >
-                                    {day.label}
-                                  </Label>
-                                </div>
-                              ))}
-                            </div>
-                            <Button
-                              variant={
-                                isEveryMode("wdays") ? "default" : "outline"
-                              }
-                              size="sm"
-                              onClick={() =>
-                                handleScheduleChange(
-                                  "wdays",
-                                  isEveryMode("wdays") ? [] : [-1]
-                                )
-                              }
-                            >
-                              {isEveryMode("wdays")
-                                ? "Every Day Selected"
-                                : "Every Day"}
-                            </Button>
-                          </div>
-
-                          {/* Expiration */}
-                          <div className="space-y-3">
-                            <Label>Job Expiration (Optional)</Label>
-                            <div className="grid grid-cols-2 gap-4">
-                              <div className="space-y-2">
-                                <Label htmlFor="expirationDate">
-                                  Expiration Date
-                                </Label>
-                                <Input
-                                  id="expirationDate"
-                                  type="date"
-                                  value={expirationDate}
-                                  onChange={(e) =>
-                                    setExpirationDate(e.target.value)
-                                  }
-                                />
-                              </div>
-                              <div className="space-y-2">
-                                <Label htmlFor="expirationTime">
-                                  Expiration Time
-                                </Label>
-                                <Input
-                                  id="expirationTime"
-                                  type="time"
-                                  value={expirationTime}
-                                  onChange={(e) =>
-                                    setExpirationTime(e.target.value)
-                                  }
-                                />
-                              </div>
-                            </div>
-                          </div>
-                        </TabsContent>
-                      </Tabs>
-                    </CardContent>
-                  </Card>
-                )}
+                {/* CronBuilder Component */}
+                <CronBuilder 
+                  onCronChange={handleCronBuilderChange} 
+                  timezone={schedule.timezone}
+                />
 
                 <div className="flex flex-col gap-3 w-full">
                   <div className="flex gap-1.5">
