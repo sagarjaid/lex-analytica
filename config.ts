@@ -5,12 +5,12 @@ import { ConfigProps } from './types/config';
 
 const config = {
   // REQUIRED
-  appName: 'NeverMissAI',
+  appName: 'Lex Analytica',
   // REQUIRED: a short description of your app for SEO tags (can be overwritten)
   appDescription:
-    'Never miss your life goals with AI-powered phone call reminders. Set goals, tasks, and habits that get reminded via intelligent AI calls to keep you on track.',
+    'The Gold Standard for Paralegal Research. Access precedent cases and analysis in one place, cutting research time while significantly boosting productivity.',
   // REQUIRED (no https://, not trialing slash at the end, just the naked domain)
-  domainName: 'nevermissai.com',
+  domainName: 'lexanalytica.com',
   crisp: {
     // Crisp website ID. IF YOU DON'T USE CRISP: just remove this => Then add a support email in this config file (resend.supportEmail) otherwise customer support won't work.
     id: '',
@@ -71,7 +71,7 @@ const config = {
     // REQUIRED — Email 'From' field to be used when sending magic login links
     fromNoReply: `Sagar <sagarjaid321@gmail.com>`,
     // REQUIRED — Email 'From' field to be used when sending other emails, like abandoned carts, updates etc..
-    fromAdmin: `Sagar at NeverMissAI <sagarjaid321@gmail.com>`,
+    fromAdmin: `Sagar at Lex Analytica <sagarjaid321@gmail.com>`,
     // Email shown to customer if need support. Leave empty if not needed => if empty, set up Crisp above, otherwise you won't be able to offer customer support."
     supportEmail: 'sagarjaid321@gmail.com',
   },

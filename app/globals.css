@@ -96,6 +96,10 @@
   .btn {
     @apply !capitalize;
   }
+  
+  .font-serif {
+    font-family: var(--font-playfair-serif), serif;
+  }
 }
 
 html,
