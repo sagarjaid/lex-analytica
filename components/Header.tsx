@@ -73,10 +73,10 @@ const Header = ({
   // Use Tailwind's hidden class for lg+ if on dash route
   return (
     <header
-      className={`w-full z-40 bg-background ${isDashRoute ? "lg:hidden" : ""}`}
+      className={`w-full z-40 bg-white border-b border-gray-200 shadow-sm ${isDashRoute ? "lg:hidden" : ""}`}
     >
       <nav
-        className="w-full max-w-7xl mx-auto flex items-center justify-between px-4 py-2 pt-4"
+        className="w-full max-w-7xl mx-auto flex items-center justify-between px-4 py-4"
         aria-label="Global"
       >
         <Link
@@ -96,7 +96,7 @@ const Header = ({
               isDashRoute ? "font-semibold text-base" : "font-bold text-xl"
             }
           >
-            NevermissAI
+            Lex Analytica
           </span>
         </Link>
 
@@ -177,8 +177,8 @@ const Header = ({
 
       {/* Mobile Menu */}
       <div className={`lg:hidden ${isOpen ? "fixed inset-0 z-50" : "hidden"}`}>
-        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm" />
-        <div className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-background border-l border-border p-4 sm:max-w-sm sm:ring-1 sm:ring-border">
+        <div className="fixed inset-0 bg-white/80 backdrop-blur-sm" />
+        <div className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-white border-l border-gray-200 p-4 sm:max-w-sm sm:ring-1 sm:ring-gray-200">
           <div className="flex items-center justify-between">
             {/* <Logo priority={true} /> */}
 
@@ -192,7 +192,7 @@ const Header = ({
                 fill="Green"
                 className="w-6 h-6"
               />{" "}
-              <span className="font-semibold text-base">NevermissAI</span>
+              <span className="font-semibold text-base">Lex Analytica</span>
             </Link>
 
             <div className="flex items-center gap-2">

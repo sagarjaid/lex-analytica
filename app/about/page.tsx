@@ -1,57 +1,38 @@
 import { Suspense } from "react";
-import Header from "@/components/Header";
+import HeaderHome from "@/components/HeaderHome";
 import FooterBig from "@/components/FooterBig";
-import aboutHero from "@/app/about-hero.gif";
-// import bg from "@/app/earth-3.gif";
-import bg from "@/app/laywer.jpg";
-
-import stats from "@/app/stats.png";
-import ButtonLearnMore from "@/components/ButtonLearnMore";
 import { getSEOTags, renderSchemaTags } from "@/lib/seo";
 import type { Metadata } from "next";
-import HeaderHome from "@/components/HeaderHome";
 
 // Enhanced SEO metadata for the about page
 export const metadata: Metadata = getSEOTags({
-  title:
-    "About ZeroTheorem - PhD Team & Bitcoin Tail Risk Investment Philosophy",
+  title: "About Lex Analytica - The Gold Standard for Paralegal Research",
   description:
-    "Meet ZeroTheorem's team of PhD scientists specializing in Bitcoin tail risk warehousing. Learn about our mission to bridge market participants seeking downside protection with investors pursuing excess returns.",
+    "Learn about Lex Analytica's mission to revolutionize legal research with AI-powered tools. Meet our team and discover why we're the gold standard for paralegal research.",
   keywords: [
-    "about zerotheorem",
-    "PhD scientists",
-    "bitcoin tail risk",
-    "investment philosophy",
-    "quantitative finance",
-    "risk management",
-    "PhD team",
-    "blockchain expertise",
-    "investment mission",
-    "corporate services",
-    "downside protection",
-    "excess returns",
-    "quantitative risk management",
-    "extreme value theory",
-    "actuarial science",
+    "about lex analytica",
+    "legal research team",
+    "paralegal research mission",
+    "legal technology company",
+    "AI legal tools",
+    "legal research innovation",
+    "paralegal software",
+    "legal tech leadership",
+    "about us",
+    "company mission",
+    "legal research standards",
   ],
   canonicalUrlRelative: "/about",
   openGraph: {
-    title:
-      "About ZeroTheorem - PhD Team & Bitcoin Tail Risk Investment Philosophy",
+    title: "About Lex Analytica - The Gold Standard for Paralegal Research",
     description:
-      "Meet ZeroTheorem's team of PhD scientists specializing in Bitcoin tail risk warehousing and quantitative risk management strategies.",
-    url: "https://zerotheorem.com/about",
+      "Learn about Lex Analytica's mission to revolutionize legal research with AI-powered tools and our commitment to excellence.",
+    url: "https://lexanalytica.com/about",
   },
   extraTags: {
-    "article:author": "ZeroTheorem Investment Team",
+    "article:author": "Lex Analytica Team",
     "article:section": "About Us",
-    "article:tag": [
-      "About",
-      "Team",
-      "PhD Scientists",
-      "Investment Philosophy",
-      "Bitcoin",
-    ],
+    "article:tag": ["About", "Team", "Mission", "Legal Research", "AI Technology"],
   },
 });
 
@@ -59,97 +40,116 @@ const About = () => {
   return (
     <>
       {renderSchemaTags("about")}
-      {/* <HelloBar /> */}
       <Suspense>
         <HeaderHome />
       </Suspense>
 
-      {/* <main className="m-auto h-screen flex flex-col bg-[url('/bg.gif')] bg-cover bg-center bg-no-repeat"> */}
-      <main className="m-auto flex flex-col">
-        <div className="flex justify-between md:flex-row flex-col-reverse max-w-6xl w-full overflow-hidden gap-4 m-auto items-center p-10 md:pt-16 md:pb-0">
-          <div className="flex flex-col gap-4 md:max-w-lg w-full">
-            <div className="md:text-3xl text-2xl font-extrabold">
-              Our Mission
-            </div>
-            <div className="text-[22px] opacity-80">
-              To bridge the gap between market participants seeking downside
-              protection and investors pursuing excess returns
-            </div>
-
-            {/* <div className="text-xs mt-1.5 font-light text-gray-700">
-              We invest early, before trends hit the mainstream
-            </div> */}
-            {/* <a
-              href="/ai-tools"
-              className="flex items-center gap-2 bg-black px-4 py-2 w-fit text-white mt-6"
-            >
-              <span className="text-sm font-semibold">Learn More</span>
-              <svg
-                className="w-4"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth={1.5}
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-                aria-hidden="true"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M4.5 12h15m0 0l-6.75-6.75M19.5 12l-6.75 6.75"
-                />
-              </svg>
-            </a> */}
-          </div>
-
-          <div className="flex flex-col items-center justify-center">
-            <img
-              src={bg.src}
-              className="w-[380px] text-center h-full object-cover"
-            />
-          </div>
-        </div>
-
-        <div className="flex md:flex-row  flex-col justify-center max-w-6xl w-full overflow-hidden gap-8 m-auto items-center p-10">
-          <div>
-            <div className="text-2xl font-extrabold">Who are we?</div>
-            <div className="text-base mt-2 text-justify opacity-80">
-              We are a specialised private investment firm dedicated to
-              warehousing Bitcoin tail risk. We are a team of PhDs in physics,
-              engineering, and quantitative finance. As early Bitcoin adopters,
-              We bring over a decade of experience in blockchain investing and
-              entrepreneurial ventures — spanning mining, the development of
-              blockchain-based financial products and marketplaces, and the
-              management of investment funds.
-            </div>
-          </div>
-          <div>
-            <div className="text-2xl font-extrabold">What do we do?</div>
-            <div className="text-base mt-2 text-justify opacity-80">
-              By applying extreme value theory, actuarial science, and
-              quantitative risk management, we engineer strategies on Bitcoin
-              financial products that transform crash risk into structured
-              outcomes. We draw on deep domain expertise and systematic trading
-              to manage tail exposures with discipline and precision.
+      <main className="min-h-screen bg-gray-50">
+        {/* Header Section */}
+        <div className="bg-white border-b border-gray-200">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+            <div className="text-center">
+              <h1 className="text-4xl font-bold text-gray-900 mb-4">
+                About Lex Analytica
+              </h1>
+              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                The Gold Standard for Paralegal Research
+              </p>
             </div>
           </div>
         </div>
 
-        <div className="flex flex-col justify-center items-center gap-3 m-auto max-w-lg mt-20 mb-10">
-          <div className="md:text-4xl text-3xl font-extrabold">
-            Corporate Services
-          </div>
+        {/* 2x2 Grid Section */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Who We Are */}
+            <div className="bg-white border border-gray-300 rounded-lg overflow-hidden">
+              <div className="bg-white border-b border-gray-300 p-6">
+                <h2 className="text-2xl font-bold text-gray-900 text-center">
+                  Who We Are
+                </h2>
+              </div>
+              <div className="p-6 bg-gray-100 min-h-[200px] flex items-center justify-center">
+                <p className="text-gray-600 text-center leading-relaxed">
+                  Lex Analytica is a pioneering legal technology company dedicated to transforming how legal professionals conduct research. We combine cutting-edge AI technology with deep legal expertise to provide the most accurate and efficient paralegal research tools available.
+                </p>
+              </div>
+            </div>
 
-          <div className="text-base text-center opacity-80">
-            If you would like further information regarding corporate services
-            please feel free to contact us directly.
-          </div>
+            {/* Our Mission */}
+            <div className="bg-white border border-gray-300 rounded-lg overflow-hidden">
+              <div className="bg-white border-b border-gray-300 p-6">
+                <h2 className="text-2xl font-bold text-gray-900 text-center">
+                  Our Mission
+                </h2>
+              </div>
+              <div className="p-6 bg-gray-100 min-h-[200px] flex items-center justify-center">
+                <p className="text-gray-600 text-center leading-relaxed">
+                  To revolutionize legal research by providing AI-powered tools that deliver unprecedented accuracy, speed, and reliability. We're committed to empowering legal professionals with technology that enhances their capabilities and drives better outcomes for their clients.
+                </p>
+              </div>
+            </div>
 
-          <ButtonLearnMore href="/contact" text="Contact" className="mt-6" />
+            {/* Leadership */}
+            <div className="bg-white border border-gray-300 rounded-lg overflow-hidden">
+              <div className="bg-white border-b border-gray-300 p-6">
+                <h2 className="text-2xl font-bold text-gray-900 text-center">
+                  Leadership
+                </h2>
+              </div>
+              <div className="p-6 bg-gray-100 min-h-[200px] flex items-center justify-center">
+                <p className="text-gray-600 text-center leading-relaxed">
+                  Our leadership team combines decades of experience in legal practice, technology development, and AI research. We're led by former practicing attorneys and technology innovators who understand both the challenges of legal research and the potential of AI to solve them.
+                </p>
+              </div>
+            </div>
+
+            {/* Why Us */}
+            <div className="bg-white border border-gray-300 rounded-lg overflow-hidden">
+              <div className="bg-white border-b border-gray-300 p-6">
+                <h2 className="text-2xl font-bold text-gray-900 text-center">
+                  Why Us
+                </h2>
+              </div>
+              <div className="p-6 bg-gray-100 min-h-[200px] flex items-center justify-center">
+                <p className="text-gray-600 text-center leading-relaxed">
+                  We deliver 95%+ accuracy in legal analysis, process cases 10x faster than traditional methods, and provide comprehensive coverage of case law with real-time updates. Our platform is trusted by leading law firms and legal professionals worldwide.
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <FooterBig />
+        {/* Call to Action Section */}
+        <div className="bg-white border-t border-gray-200">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+            <div className="text-center">
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                Ready to Transform Your Legal Research?
+              </h2>
+              <p className="text-gray-600 mb-8">
+                Join thousands of legal professionals who trust Lex Analytica for their research needs.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <a
+                  href="/signin"
+                  className="bg-black text-white px-8 py-3 rounded-lg font-semibold hover:bg-gray-800 transition-colors duration-200"
+                >
+                  Get Started
+                </a>
+                <a
+                  href="/contact"
+                  className="border border-gray-300 text-gray-700 px-8 py-3 rounded-lg font-semibold hover:bg-gray-50 transition-colors duration-200"
+                >
+                  Contact Us
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
       </main>
+
+      <FooterBig />
     </>
   );
 };

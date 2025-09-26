@@ -23,7 +23,8 @@ import { Button } from "@/components/ui/button";
 import ThemeToggle from "@/components/ThemeToggle";
 
 
-import Plans from '@/components/Plans';
+import PricingNew from '@/components/PricingNew';
+import CTA from '@/components/CTA';
 import { getSEOTags } from "@/lib/seo";
 import config from "@/config";
 
@@ -52,7 +53,8 @@ export default function Pricing() {
             <ThemeToggle />
           </span>
         </div>
-        <Plans />
+        <PricingNew />
+        <CTA />
       </div>
     </main>
     </>

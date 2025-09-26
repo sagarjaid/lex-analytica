@@ -90,8 +90,8 @@ const Home = () => {
             </div>
             <div className="flex flex-row gap-4 mt-6">
               <ButtonLearnMore
-                href="/demo"
-                text="Request a demo"
+                href="/signin"
+                text="Get Started"
                 className="bg-black text-white hover:bg-gray-800"
               />
               <ButtonLearnMore

@@ -34,7 +34,7 @@ const Footer = () => {
                 fill="Green"
                 className="w-6 h-6"
               />{" "}
-              <span className="font-semibold text-base">NevermissAI</span>
+              <span className="font-semibold text-base">Lex Analytica</span>
             </Link>
 
             <p className="mt-3 text-sm text-muted-foreground">
@@ -53,40 +53,40 @@ const Footer = () => {
 
               <div className="flex flex-col justify-center items-center md:items-start gap-1 mb-10">
                 <Link
-                  href="/stock"
+                  href="/about"
                   className="text-sm  leading-6 text-foreground/80 hover:text-foreground transition-colors"
                 >
-                  Stocks
+                  About
                 </Link>
                 <Link
-                  href="/commodity"
+                  href="/faq"
                   className="text-sm  leading-6 text-foreground/80 hover:text-foreground transition-colors"
                 >
-                  Commodities
+                  FAQ
                 </Link>
                 <Link
-                  href="/currency"
+                  href="/contact"
                   className="text-sm leading-6 text-foreground/80 hover:text-foreground transition-colors"
                 >
-                  Currencies
+                  Contact
                 </Link>
                 <Link
-                  href="/real-estate"
+                  href="/dash"
                   className="text-sm leading-6 text-foreground/80 hover:text-foreground transition-colors"
                 >
-                  Real Estate
+                  Dashboard
                 </Link>
                 <Link
-                  href="/indices"
+                  href="/pricing"
                   className="text-sm  leading-6 text-foreground/80 hover:text-foreground transition-colors"
                 >
-                  Indices
+                  Pricing
                 </Link>
                 <Link
-                  href="/bond"
+                  href="/login"
                   className="text-sm  leading-6 text-foreground/80 hover:text-foreground transition-colors"
                 >
-                  Bonds
+                  Login
                 </Link>
               </div>
             </div>
