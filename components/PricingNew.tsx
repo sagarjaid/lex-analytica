@@ -53,7 +53,7 @@ const PricingNew = () => {
   return (
     <section className="py-24 px-8 max-w-7xl mx-auto">
       <div className="flex flex-col justify-between text-center items-center w-full mb-20">
-        <h2 className="font-bold text-3xl lg:text-5xl max-w-4xl tracking-tight">
+        <h2 className="font-bold text-2xl lg:text-3xl max-w-4xl tracking-tight">
           Choose the perfect plan for your legal needs
         </h2>
       </div>

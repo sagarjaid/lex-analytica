@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import HeaderHome from "@/components/HeaderHome";
 import FooterBig from "@/components/FooterBig";
+import ButtonLearnMore from "@/components/ButtonLearnMore";
 import { getSEOTags, renderSchemaTags } from "@/lib/seo";
 import type { Metadata } from "next";
 
@@ -50,7 +51,7 @@ const About = () => {
         <HeaderHome />
       </Suspense>
 
-      <main className="min-h-screen bg-gray-50">
+      <main className="min-h-screen bg-gray-50 font-serif">
         {/* Header Section */}
         <div className="bg-white border-b border-gray-200">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
@@ -153,19 +154,17 @@ const About = () => {
                 Join thousands of legal professionals who trust Lex Analytica
                 for their research needs.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <a
+              <div className="flex flex-row gap-4 justify-center">
+                <ButtonLearnMore
                   href="/signin"
-                  className="bg-black text-white px-8 py-3 rounded-lg font-semibold hover:bg-gray-800 transition-colors duration-200"
-                >
-                  Get Started
-                </a>
-                <a
+                  text="Get Started"
+                  className="bg-black text-white hover:bg-gray-800"
+                />
+                <ButtonLearnMore
                   href="/contact"
-                  className="border border-gray-300 text-gray-700 px-8 py-3 rounded-lg font-semibold hover:bg-gray-50 transition-colors duration-200"
-                >
-                  Contact Us
-                </a>
+                  text="Contact Us"
+                  className="bg-white text-black border border-black hover:bg-gray-50"
+                />
               </div>
             </div>
           </div>

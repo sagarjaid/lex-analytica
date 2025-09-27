@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import HeaderHome from "@/components/HeaderHome";
 import FooterBig from "@/components/FooterBig";
+import ButtonLearnMore from "@/components/ButtonLearnMore";
 import { getSEOTags } from "@/lib/seo";
 import config from "@/config";
 import type { Metadata } from "next";
@@ -98,7 +99,7 @@ export default function FAQPage() {
       <Suspense fallback={<div>Loading...</div>}>
         <HeaderHome />
       </Suspense>
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gray-50 font-serif">
         {/* Header Section */}
         <div className="bg-white border-b border-gray-200">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
@@ -134,19 +135,17 @@ export default function FAQPage() {
                 Can&apos;t find what you&apos;re looking for? Our support team
                 is here to help.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <a
+              <div className="flex flex-row gap-4 justify-center">
+                <ButtonLearnMore
                   href="/contact"
-                  className="bg-black text-white px-8 py-3 rounded-lg font-semibold hover:bg-gray-800 transition-colors duration-200"
-                >
-                  Contact Support
-                </a>
-                <a
+                  text="Contact Support"
+                  className="bg-black text-white hover:bg-gray-800"
+                />
+                <ButtonLearnMore
                   href="/signin"
-                  className="border border-gray-300 text-gray-700 px-8 py-3 rounded-lg font-semibold hover:bg-gray-50 transition-colors duration-200"
-                >
-                  Try Lex Analytica
-                </a>
+                  text="Try Lex Analytica"
+                  className="bg-white text-black border border-black hover:bg-gray-50"
+                />
               </div>
             </div>
           </div>
