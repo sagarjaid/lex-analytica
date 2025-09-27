@@ -1,35 +1,9 @@
-import { Suspense } from "react";
+"use client";
+
+import { Suspense, useState } from "react";
 import HeaderHome from "@/components/HeaderHome";
 import FooterBig from "@/components/FooterBig";
 import ButtonLearnMore from "@/components/ButtonLearnMore";
-import { getSEOTags } from "@/lib/seo";
-import config from "@/config";
-import type { Metadata } from "next";
-
-// Enhanced SEO metadata for the FAQ page
-export const metadata: Metadata = getSEOTags({
-  title: `FAQ | ${config.appName}`,
-  description:
-    "Find answers to frequently asked questions about Lex Analytica's AI-powered legal research platform. Learn about accuracy, features, and how it compares to other legal research tools.",
-  keywords: [
-    "lex analytica faq",
-    "legal research questions",
-    "AI legal tools FAQ",
-    "paralegal research help",
-    "legal technology support",
-    "lex analytica support",
-    "legal AI accuracy",
-    "legal research platform",
-    "frequently asked questions",
-    "legal tech help",
-  ],
-  canonicalUrlRelative: "/faq",
-  openGraph: {
-    title: `FAQ | ${config.appName}`,
-    description:
-      "Get answers to common questions about Lex Analytica's AI-powered legal research platform.",
-  },
-});
 
 // FAQ data with the questions from the image
 const faqData = [
@@ -75,25 +49,82 @@ const faqData = [
 
 interface FAQItemProps {
   item: (typeof faqData)[0];
+  isOpen: boolean;
+  onToggle: () => void;
 }
 
-const FAQItem = ({ item }: FAQItemProps) => {
+const FAQItem = ({ item, isOpen, onToggle }: FAQItemProps) => {
   return (
-    <div className="bg-white border border-black rounded-lg overflow-hidden">
-      {/* Black header with question - no button, no icons */}
-      <div className="w-full bg-black text-white p-6">
-        <h3 className="text-lg font-semibold leading-tight">{item.question}</h3>
-      </div>
+    <div className="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow">
+      <button
+        onClick={onToggle}
+        className="w-full bg-white text-left p-6 hover:bg-gray-50 transition-colors focus:outline-none rounded-lg min-h-[100px] flex items-center"
+      >
+        <div className="flex justify-between items-center w-full">
+          <h3 className="text-lg font-semibold text-gray-900 pr-4 leading-tight flex-1">
+            {item.question}
+          </h3>
+          <div className="flex-shrink-0">
+            {isOpen ? (
+              <svg
+                className="w-5 h-5 text-gray-500 transition-colors duration-200"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 12h12"
+                />
+              </svg>
+            ) : (
+              <svg
+                className="w-5 h-5 text-gray-500 transition-colors duration-200"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                />
+              </svg>
+            )}
+          </div>
+        </div>
+      </button>
 
-      {/* White answer box - always visible */}
-      <div className="p-6 bg-white">
-        <div className="text-gray-700 leading-relaxed">{item.answer}</div>
+      <div className={`overflow-hidden transition-all duration-500 ease-out ${
+        isOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+      }`}>
+        <div className="px-6 pb-6 bg-white border-t border-gray-100">
+          <div className="text-gray-700 leading-relaxed pt-4">{item.answer}</div>
+        </div>
       </div>
     </div>
   );
 };
 
 export default function FAQPage() {
+  const [openItems, setOpenItems] = useState<number[]>([]);
+
+  const toggleItem = (id: number) => {
+    setOpenItems((prev) => {
+      if (prev.includes(id)) {
+        return prev.filter(item => item !== id);
+      } else {
+        return [...prev, id];
+      }
+    });
+  };
+
+  // Split the FAQ data into two columns for independent stacking
+  const column1Data = faqData.slice(0, 3); // Items 1, 2, 3
+  const column2Data = faqData.slice(3);    // Items 4, 5, 6
   return (
     <>
       <Suspense fallback={<div>Loading...</div>}>
@@ -118,9 +149,31 @@ export default function FAQPage() {
         {/* FAQ Grid Section */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {faqData.map((item) => (
-              <FAQItem key={item.id} item={item} />
-            ))}
+            
+            {/* Column 1 Container */}
+            <div className="flex flex-col gap-6">
+              {column1Data.map((item) => (
+                <FAQItem
+                  key={item.id}
+                  item={item}
+                  isOpen={openItems.includes(item.id)}
+                  onToggle={() => toggleItem(item.id)}
+                />
+              ))}
+            </div>
+
+            {/* Column 2 Container */}
+            <div className="flex flex-col gap-6">
+              {column2Data.map((item) => (
+                <FAQItem
+                  key={item.id}
+                  item={item}
+                  isOpen={openItems.includes(item.id)}
+                  onToggle={() => toggleItem(item.id)}
+                />
+              ))}
+            </div>
+
           </div>
         </div>
 
