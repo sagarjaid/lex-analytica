@@ -16,12 +16,13 @@ export const dynamic = "force-dynamic";
 
 export const metadata = getSEOTags({
   title: `Dashboard | ${config.appName}`,
-  description: 'Manage your life goals, tasks, and habits with AI-powered reminders. Add new goals, track progress, and never miss important milestones.',
-  canonicalUrlRelative: '/dash',
+  description:
+    "Manage your life goals, tasks, and habits with AI-powered reminders. Add new goals, track progress, and never miss important milestones.",
+  canonicalUrlRelative: "/dash",
   openGraph: {
     title: `Dashboard | ${config.appName}`,
-    description: 'Manage your life goals, tasks, and habits with AI-powered reminders.',
-    type: 'website',
+    description:
+      "Manage your life goals, tasks, and habits with AI-powered reminders.",
   },
 });
 

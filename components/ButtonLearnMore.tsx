@@ -6,7 +6,11 @@ interface ButtonLearnMoreProps {
   className?: string;
 }
 
-const ButtonLearnMore = ({ href, text, className = "" }: ButtonLearnMoreProps) => {
+const ButtonLearnMore = ({
+  href,
+  text,
+  className = "",
+}: ButtonLearnMoreProps) => {
   return (
     <Link
       href={href}

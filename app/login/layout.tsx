@@ -6,12 +6,13 @@ import React from "react";
 
 export const metadata = getSEOTags({
   title: `Login | ${config.appName}`,
-  description: 'Sign in to your NeverMissAI account to manage your life goals and receive AI-powered phone call reminders.',
-  canonicalUrlRelative: '/login',
+  description:
+    "Sign in to your NeverMissAI account to manage your life goals and receive AI-powered phone call reminders.",
+  canonicalUrlRelative: "/login",
   openGraph: {
     title: `Login | ${config.appName}`,
-    description: 'Sign in to your NeverMissAI account to manage your life goals and receive AI-powered phone call reminders.',
-    type: 'website',
+    description:
+      "Sign in to your NeverMissAI account to manage your life goals and receive AI-powered phone call reminders.",
   },
 });
 

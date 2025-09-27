@@ -34,19 +34,15 @@ const Header = () => {
         {/* Your logo/name on large screens */}
         <Link
           href={"/"}
-          className={`flex items-center gap-2 text-[hsl(var(--text-primary))] transition-colors duration-200`}
+          className={`flex items-center justify-start gap-2 text-[hsl(var(--text-primary))] transition-colors duration-200`}
         >
-          <div className="flex items-center gap-2">
-            <Sparkle
-              strokeWidth={1}
-              color="Green"
-              fill="Green"
-              className="w-8 h-8"
-            />
-            <span className="font-bold text-xl text-[hsl(var(--text-primary))]">
-              {config.appName}
-            </span>
-          </div>
+          <Image
+            className="opacity-80"
+            src={getLogo()}
+            alt={config.appName}
+            width={200}
+            height={80}
+          />
         </Link>
 
         {/* Burger button to open menu on mobile */}

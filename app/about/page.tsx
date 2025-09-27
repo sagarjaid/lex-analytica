@@ -32,7 +32,13 @@ export const metadata: Metadata = getSEOTags({
   extraTags: {
     "article:author": "Lex Analytica Team",
     "article:section": "About Us",
-    "article:tag": ["About", "Team", "Mission", "Legal Research", "AI Technology"],
+    "article:tag": [
+      "About",
+      "Team",
+      "Mission",
+      "Legal Research",
+      "AI Technology",
+    ],
   },
 });
 
@@ -71,7 +77,11 @@ const About = () => {
               </div>
               <div className="p-6 bg-gray-100 min-h-[200px] flex items-center justify-center">
                 <p className="text-gray-600 text-center leading-relaxed">
-                  Lex Analytica is a pioneering legal technology company dedicated to transforming how legal professionals conduct research. We combine cutting-edge AI technology with deep legal expertise to provide the most accurate and efficient paralegal research tools available.
+                  Lex Analytica is a pioneering legal technology company
+                  dedicated to transforming how legal professionals conduct
+                  research. We combine cutting-edge AI technology with deep
+                  legal expertise to provide the most accurate and efficient
+                  paralegal research tools available.
                 </p>
               </div>
             </div>
@@ -85,7 +95,11 @@ const About = () => {
               </div>
               <div className="p-6 bg-gray-100 min-h-[200px] flex items-center justify-center">
                 <p className="text-gray-600 text-center leading-relaxed">
-                  To revolutionize legal research by providing AI-powered tools that deliver unprecedented accuracy, speed, and reliability. We're committed to empowering legal professionals with technology that enhances their capabilities and drives better outcomes for their clients.
+                  To revolutionize legal research by providing AI-powered tools
+                  that deliver unprecedented accuracy, speed, and reliability.
+                  We&apos;re committed to empowering legal professionals with
+                  technology that enhances their capabilities and drives better
+                  outcomes for their clients.
                 </p>
               </div>
             </div>
@@ -99,7 +113,11 @@ const About = () => {
               </div>
               <div className="p-6 bg-gray-100 min-h-[200px] flex items-center justify-center">
                 <p className="text-gray-600 text-center leading-relaxed">
-                  Our leadership team combines decades of experience in legal practice, technology development, and AI research. We're led by former practicing attorneys and technology innovators who understand both the challenges of legal research and the potential of AI to solve them.
+                  Our leadership team combines decades of experience in legal
+                  practice, technology development, and AI research. We&apos;re
+                  led by former practicing attorneys and technology innovators
+                  who understand both the challenges of legal research and the
+                  potential of AI to solve them.
                 </p>
               </div>
             </div>
@@ -113,7 +131,11 @@ const About = () => {
               </div>
               <div className="p-6 bg-gray-100 min-h-[200px] flex items-center justify-center">
                 <p className="text-gray-600 text-center leading-relaxed">
-                  We deliver 95%+ accuracy in legal analysis, process cases 10x faster than traditional methods, and provide comprehensive coverage of case law with real-time updates. Our platform is trusted by leading law firms and legal professionals worldwide.
+                  We deliver 95%+ accuracy in legal analysis, process cases 10x
+                  faster than traditional methods, and provide comprehensive
+                  coverage of case law with real-time updates. Our platform is
+                  trusted by leading law firms and legal professionals
+                  worldwide.
                 </p>
               </div>
             </div>
@@ -128,7 +150,8 @@ const About = () => {
                 Ready to Transform Your Legal Research?
               </h2>
               <p className="text-gray-600 mb-8">
-                Join thousands of legal professionals who trust Lex Analytica for their research needs.
+                Join thousands of legal professionals who trust Lex Analytica
+                for their research needs.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <a
