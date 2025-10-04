@@ -53,9 +53,9 @@ const PricingNew = () => {
   return (
     <section className="py-24 px-8 max-w-7xl mx-auto">
       <div className="flex flex-col justify-between text-center items-center w-full mb-20">
-        <h2 className="font-bold text-2xl lg:text-3xl max-w-4xl tracking-tight">
+        <h1 className="text-4xl font-bold text-gray-900 mb-4">
           Choose the perfect plan for your legal needs
-        </h2>
+        </h1>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
@@ -94,7 +94,7 @@ const PricingNew = () => {
               {plan.features.map((feature, featureIndex) => (
                 <li key={featureIndex} className="flex items-start gap-3">
                   <ArrowRight className="w-5 h-5 text-black mt-0.5 flex-shrink-0" />
-                  <span className="text-gray-700 text-sm leading-relaxed">
+                  <span className="text-gray-700 text-sm leading-relaxed font-light">
                     {feature}
                   </span>
                 </li>

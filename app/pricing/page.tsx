@@ -23,7 +23,7 @@ export default function Pricing() {
       <Suspense fallback={<div>Loading...</div>}>
         <HeaderHome />
       </Suspense>
-      <main className="min-h-screen bg-white font-serif">
+      <main className="min-h-screen bg-white">
         <PricingNew />
         <CTA />
       </main>

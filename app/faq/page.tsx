@@ -61,7 +61,7 @@ const FAQItem = ({ item, isOpen, onToggle }: FAQItemProps) => {
         className="w-full bg-white text-left p-6 hover:bg-gray-50 transition-colors focus:outline-none rounded-lg min-h-[100px] flex items-center"
       >
         <div className="flex justify-between items-center w-full">
-          <h3 className="text-lg font-semibold text-gray-900 pr-4 leading-tight flex-1">
+          <h3 className="text-lg font-semibold text-gray-900 pr-4 leading-tight flex-1 font-light">
             {item.question}
           </h3>
           <div className="flex-shrink-0">
@@ -102,7 +102,7 @@ const FAQItem = ({ item, isOpen, onToggle }: FAQItemProps) => {
         isOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
       }`}>
         <div className="px-6 pb-6 bg-white border-t border-gray-100">
-          <div className="text-gray-700 leading-relaxed pt-4">{item.answer}</div>
+          <div className="text-gray-700 leading-relaxed pt-4 font-light">{item.answer}</div>
         </div>
       </div>
     </div>
@@ -130,7 +130,7 @@ export default function FAQPage() {
       <Suspense fallback={<div>Loading...</div>}>
         <HeaderHome />
       </Suspense>
-      <div className="min-h-screen bg-gray-50 font-serif">
+      <div className="min-h-screen bg-gray-50">
         {/* Header Section */}
         <div className="bg-white border-b border-gray-200">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
@@ -138,7 +138,7 @@ export default function FAQPage() {
               <h1 className="text-4xl font-bold text-gray-900 mb-4">
                 Frequently Asked Questions
               </h1>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              <p className="text-xl text-gray-600 max-w-3xl mx-auto font-light">
                 Get answers to common questions about Lex Analytica and how it
                 can transform your legal research workflow.
               </p>
@@ -184,7 +184,7 @@ export default function FAQPage() {
               <h2 className="text-2xl font-bold text-gray-900 mb-4">
                 Still have questions?
               </h2>
-              <p className="text-gray-600 mb-8">
+              <p className="text-gray-600 mb-8 font-light">
                 Can&apos;t find what you&apos;re looking for? Our support team
                 is here to help.
               </p>

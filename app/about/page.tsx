@@ -51,7 +51,7 @@ const About = () => {
         <HeaderHome />
       </Suspense>
 
-      <main className="min-h-screen bg-gray-50 font-serif">
+      <main className="min-h-screen bg-gray-50">
         {/* Header Section */}
         <div className="bg-white border-b border-gray-200">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
@@ -59,7 +59,7 @@ const About = () => {
               <h1 className="text-4xl font-bold text-gray-900 mb-4">
                 About Lex Analytica
               </h1>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              <p className="text-xl text-gray-600 max-w-3xl mx-auto font-light">
                 The Gold Standard for Paralegal Research
               </p>
             </div>
@@ -77,7 +77,7 @@ const About = () => {
                 </h2>
               </div>
               <div className="p-6 bg-gray-100 min-h-[200px] flex items-center justify-center">
-                <p className="text-gray-600 text-center leading-relaxed">
+                <p className="text-gray-600 text-center leading-relaxed font-light">
                   Lex Analytica is a pioneering legal technology company
                   dedicated to transforming how legal professionals conduct
                   research. We combine cutting-edge AI technology with deep
@@ -95,7 +95,7 @@ const About = () => {
                 </h2>
               </div>
               <div className="p-6 bg-gray-100 min-h-[200px] flex items-center justify-center">
-                <p className="text-gray-600 text-center leading-relaxed">
+                <p className="text-gray-600 text-center leading-relaxed font-light">
                   To revolutionize legal research by providing AI-powered tools
                   that deliver unprecedented accuracy, speed, and reliability.
                   We&apos;re committed to empowering legal professionals with
@@ -113,7 +113,7 @@ const About = () => {
                 </h2>
               </div>
               <div className="p-6 bg-gray-100 min-h-[200px] flex items-center justify-center">
-                <p className="text-gray-600 text-center leading-relaxed">
+                <p className="text-gray-600 text-center leading-relaxed font-light">
                   Our leadership team combines decades of experience in legal
                   practice, technology development, and AI research. We&apos;re
                   led by former practicing attorneys and technology innovators
@@ -131,7 +131,7 @@ const About = () => {
                 </h2>
               </div>
               <div className="p-6 bg-gray-100 min-h-[200px] flex items-center justify-center">
-                <p className="text-gray-600 text-center leading-relaxed">
+                <p className="text-gray-600 text-center leading-relaxed font-light">
                   We deliver 95%+ accuracy in legal analysis, process cases 10x
                   faster than traditional methods, and provide comprehensive
                   coverage of case law with real-time updates. Our platform is
@@ -150,7 +150,7 @@ const About = () => {
               <h2 className="text-2xl font-bold text-gray-900 mb-4">
                 Ready to Transform Your Legal Research?
               </h2>
-              <p className="text-gray-600 mb-8">
+              <p className="text-gray-600 mb-8 font-light">
                 Join thousands of legal professionals who trust Lex Analytica
                 for their research needs.
               </p>
